@@ -1,6 +1,6 @@
 import socket
 import time
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 
 class MyClient:
@@ -44,18 +44,18 @@ class MyClient:
         self.socket.send(self.send_message)
         self.receive_message = self.socket.recv(1024)
 
-    # def setup_pi(self):
-    #     GPIO.setmode(GPIO.BOARD)                # Numbers GPIOs by physical location
-    #     GPIO.setup(self.led_pin, GPIO.OUT)      # Set LedPin's mode is output
-    #     GPIO.output(self.led_pin, GPIO.HIGH)    # Set LedPin high(+3.3V) to turn on led
-    #
-    # def blink(self):
-    #     while True:
-    #         GPIO.output(self.led_pin, GPIO.HIGH)  # LED on
-    #         time.sleep(1)
-    #         GPIO.output(self.led_pin, GPIO.LOW)  # LED off
-    #         time.sleep(1)
-    #
-    # def destroy(self):
-    #     GPIO.output(self.led_pin, GPIO.LOW)     # LED off
-    #     GPIO.cleanup()                          # Release resource
+    def setup_pi(self):
+        GPIO.setmode(GPIO.BOARD)                # Numbers GPIOs by physical location
+        GPIO.setup(self.led_pin, GPIO.OUT)      # Set LedPin's mode is output
+        GPIO.output(self.led_pin, GPIO.HIGH)    # Set LedPin high(+3.3V) to turn on led
+
+    def blink(self):
+        while True:
+            GPIO.output(self.led_pin, GPIO.HIGH)  # LED on
+            time.sleep(1)
+            GPIO.output(self.led_pin, GPIO.LOW)  # LED off
+            time.sleep(1)
+
+    def destroy(self):
+        GPIO.output(self.led_pin, GPIO.LOW)     # LED off
+        GPIO.cleanup()                          # Release resource
