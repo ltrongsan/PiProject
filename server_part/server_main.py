@@ -29,12 +29,8 @@ def record():
     connection.send(server1.send_message.encode())
 
 
-def threadStartServer():
+def thread_start_server():
     threading.Thread(target=start_server).start()
-
-
-# def threadRecord():
-#     threading.Thread(target=record).start()
 
 
 host = socket.gethostname()
@@ -43,16 +39,12 @@ buffer_size = 1024
 sampling_freq = 44100
 
 server1 = server.MyServer(host, port)
+thread_start_server()
 
+# create a Record Button
 root = Tk()
 frame = Frame(root)
 frame.pack()
-
-# start_button = Button(frame, text="START SERVER", fg="black", command=threadStart)
-# start_button.pack(side=LEFT)
-
-threadStartServer()
-
 record_button = Button(frame, text="RECORD", bg="red", fg="black", command=record)
 record_button.pack(side=RIGHT)
 
