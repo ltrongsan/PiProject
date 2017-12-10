@@ -18,10 +18,14 @@ while 1:
         RecordAudio.record_audio()
         time.sleep(3)
 
-        # Send file
-        file = open('output.wav', 'rb')
-        client1.send_file(file, buffer_size, 'SEND')
-        file.close()
+        # # Send file
+        # file = open('output.wav', 'rb')
+        # client1.send_file(file, buffer_size, 'SEND')
+        # file.close()
+
+        # Send FFT sum
+        client1.sum_fourier_transform()
+        client1.socket.send(client1.send_message.encode())
 
     client1 = client.MyClient(host, port)
 

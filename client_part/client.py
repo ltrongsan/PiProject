@@ -1,5 +1,8 @@
 import socket
 import time
+import numpy
+from scipy.io import wavfile
+from numpy.fft import fft
 import RPi.GPIO as GPIO
 
 
@@ -59,3 +62,13 @@ class MyClient:
     def destroy(self):
         GPIO.output(self.led_pin, GPIO.LOW)     # LED off
         GPIO.cleanup()                          # Release resource
+
+    def sum_fourier_transform(self):
+        rate, sound_data = wavfile.read('output.wav')
+        sound_data = sound_data / (2. ** 15)            # Convert sound data with 16 Bit
+        fft_result = fft(sound_data)
+        fft_length = int(len(fft_result) / 2)           # Take only half of the FFT
+        fft_result = abs(fft_result[0:fft_length - 1])  # Get the absolute value
+        fft_result = fft_result / max(fft_result)       # Normalize the result
+        spectral_sum = numpy.sum(fft_result)
+        self.send_message = str(spectral_sum)
