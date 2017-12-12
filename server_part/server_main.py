@@ -34,6 +34,7 @@ def record():
         connection.send(server1.send_message.encode())
         time.sleep(10)
 
+
 def thread_start_server():
     threading.Thread(target=start_server).start()
 
