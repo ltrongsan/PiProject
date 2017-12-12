@@ -1,5 +1,6 @@
 import socket
 import threading
+import time
 from tkinter import *
 from server_part import server
 
@@ -28,9 +29,10 @@ def start_server():
 
 def record():
     global connection
-    server1.send_message = 'RECORD'
-    connection.send(server1.send_message.encode())
-
+    while (1):
+        server1.send_message = 'RECORD'
+        connection.send(server1.send_message.encode())
+        time.sleep(10)
 
 def thread_start_server():
     threading.Thread(target=start_server).start()
