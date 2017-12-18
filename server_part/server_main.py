@@ -16,15 +16,6 @@ def start_server():
         spectral_sum = float(server1.receive_message.decode())
         print('The sum of FFT is : {0:.3f}'.format(spectral_sum))
 
-        # if server1.receive_message.decode() == 'SEND':          # Handle 'SEND' command
-        #     while server1.is_receiving_mess():
-        #         print("Receiving...")
-        #         server1.receive(connection)
-        #         print("Done Receiving")
-        # elif server1.receive_message.decode() == 'RECEIVE':     # Handle 'RECEIVE' command
-        #     server1.sum_fourier_transform()                     # Process FFT
-        #     connection.send(server1.send_message.encode())      # Send result (sum of FFT spectral)
-
 
 def record():
     global connection

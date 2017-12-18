@@ -6,7 +6,6 @@ import RecordAudio
 
 host = socket.gethostname()
 port = 8888
-buffer_size = 1024
 
 client1 = client.MyClient(host, port)
 print('Connection Established')
@@ -17,11 +16,6 @@ while 1:
         # Start recording
         RecordAudio.record_audio()
         time.sleep(3)
-
-        # # Send file
-        # file = open('output.wav', 'rb')
-        # client1.send_file(file, buffer_size, 'SEND')
-        # file.close()
 
         # Send FFT sum
         client1.sum_fourier_transform()

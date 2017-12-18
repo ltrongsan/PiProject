@@ -1,19 +1,18 @@
 import socket
-import time
 import numpy
 from scipy.io import wavfile
 from numpy.fft import fft
-import RPi.GPIO as GPIO
 
 
 class MyClient:
     def __init__(self, host, port):
 
+        self.client_ID = None
+        self.client_IP = socket.gethostname()
         self.send_message = None
         self.receive_message = None
         self.file_size = 0
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.led_pin = 7    # GPIO output pin number
 
         # Connect the socket to the port where the server is listening
         server_address = (host, port)
@@ -47,21 +46,6 @@ class MyClient:
         self.socket.send(self.send_message)
         self.receive_message = self.socket.recv(1024)
 
-    def setup_pi(self):
-        GPIO.setmode(GPIO.BOARD)                # Numbers GPIOs by physical location
-        GPIO.setup(self.led_pin, GPIO.OUT)      # Set LedPin's mode is output
-        GPIO.output(self.led_pin, GPIO.HIGH)    # Set LedPin high(+3.3V) to turn on led
-
-    def blink(self):
-        while True:
-            GPIO.output(self.led_pin, GPIO.HIGH)  # LED on
-            time.sleep(1)
-            GPIO.output(self.led_pin, GPIO.LOW)  # LED off
-            time.sleep(1)
-
-    def destroy(self):
-        GPIO.output(self.led_pin, GPIO.LOW)     # LED off
-        GPIO.cleanup()                          # Release resource
 
     def sum_fourier_transform(self):
         rate, sound_data = wavfile.read('output.wav')
