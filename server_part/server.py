@@ -1,15 +1,15 @@
 import socket
 import sys
 import numpy
+from threading import Thread
 from scipy.io import wavfile
 from numpy.fft import fft
 
 
-class MyServer:
+class MyServer():
 
     def __init__(self, host, port):
-
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)     # create an INET, STREAMing socket
         self.receive_message = None
         self.send_message = None
         self.file_size = 0
@@ -58,3 +58,14 @@ class MyServer:
         self.send_message = str(spectral_sum)
 
 
+class ClientThread(Thread):
+
+    def __init__(self, client_IP, client_port, client_ID):
+        Thread.__init__(self)
+        self.client_IP = client_IP
+        self.client_port = client_port
+        self.client_ID = client_ID
+        print('New connection added: ' + client_IP)
+
+    def run(self):
+        print('Do Something')

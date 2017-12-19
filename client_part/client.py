@@ -6,13 +6,11 @@ from numpy.fft import fft
 
 class MyClient:
     def __init__(self, host, port):
-
-        self.client_ID = None
         self.client_IP = socket.gethostname()
         self.send_message = None
         self.receive_message = None
         self.file_size = 0
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)     # create an INET, STREAMing socket
 
         # Connect the socket to the port where the server is listening
         server_address = (host, port)
@@ -45,7 +43,6 @@ class MyClient:
         self.send_message = command.encode()    # Send command message 'RECEIVE'
         self.socket.send(self.send_message)
         self.receive_message = self.socket.recv(1024)
-
 
     def sum_fourier_transform(self):
         rate, sound_data = wavfile.read('output.wav')

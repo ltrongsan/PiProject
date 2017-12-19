@@ -1,21 +1,25 @@
 import socket
-import threading
 import time
+from threading import Thread
 from tkinter import *
 from server_part import server
 
 
 def start_server():
+    thread_id = 1
     while 1:
         global connection
         # now keep talking with the client
         # wait to accept a connection - blocking call
         connection, address = server1.socket.accept()
-        print('Connected with ' + address[0] + ':' + str(address[1]))
+        print('Connected with IP ' + address[0] + ' port ' + str(address[1]))
+        new_thread = server.ClientThread(address[0],address[1],thread_id)
+        thread_id = thread_id + 1
+        new_thread.start()
 
-        server1.receive_message = connection.recv(buffer_size)  # Receive command message (1st message)
-        spectral_sum = float(server1.receive_message.decode())
-        print('The sum of FFT is : {0:.3f}'.format(spectral_sum))
+        # server1.receive_message = connection.recv(buffer_size)  # Receive command message (1st message)
+        # spectral_sum = float(server1.receive_message.decode())
+        # print('The sum of FFT is : {0:.3f}'.format(spectral_sum))
 
 
 def record():
@@ -26,17 +30,13 @@ def record():
         time.sleep(10)
 
 
-def thread_start_server():
-    threading.Thread(target=start_server).start()
-
-
 host = socket.gethostname()
 port = 8888
 buffer_size = 1024
 sampling_freq = 44100
 
 server1 = server.MyServer(host, port)
-thread_start_server()
+Thread(target=start_server).start()
 
 # create a Record Button
 root = Tk()
