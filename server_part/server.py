@@ -4,9 +4,10 @@ import numpy
 from threading import Thread
 from scipy.io import wavfile
 from numpy.fft import fft
+import time
 
 
-class MyServer():
+class MyServer:
 
     def __init__(self, host, port):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)     # create an INET, STREAMing socket
@@ -29,13 +30,7 @@ class MyServer():
         self.socket.listen(5)
         print('Socket now listening')
 
-    def is_receiving_mess(self):
-        if self.receive_message:
-            return True
-        else:
-            return False
-
-    def receive(self, connection):
+    def receive_file(self, connection):
         file = open('test.wav', 'wb')
         self.receive_message = connection.recv(self.buffer_size)
         file.write(self.receive_message)
@@ -57,15 +52,27 @@ class MyServer():
         spectral_sum = numpy.sum(fft_result)
         self.send_message = str(spectral_sum)
 
+    def send_record_command(self, connection):
+        while 1:
+            self.send_message = 'RECORD'
+            connection.send(self.send_message.encode())
+            time.sleep(10)
+
 
 class ClientThread(Thread):
 
-    def __init__(self, client_IP, client_port, client_ID):
+    def __init__(self, server, connection, client_address, client_ID):
         Thread.__init__(self)
-        self.client_IP = client_IP
-        self.client_port = client_port
+        self.server = server
+        self.connection = connection
+        self.client_IP = client_address[0]
+        self.client_port = client_address[1]
         self.client_ID = client_ID
-        print('New connection added: ' + client_IP)
+        print('New connection added: ' + self.client_IP)
+        print('Thread number: ' + str(self.client_ID))
 
     def run(self):
-        print('Do Something')
+        while 1:
+            self.server.receive_message = self.connection.recv(1024)  # Receive message
+            spectral_sum = float(self.server.receive_message.decode())
+            print('The sum of FFT is : {0:.3f}'.format(spectral_sum))

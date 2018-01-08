@@ -20,6 +20,4 @@ while 1:
         # Send FFT sum
         client1.sum_fourier_transform()
         client1.socket.send(client1.send_message.encode())
-
-    client1 = client.MyClient(host, port)
-
+        print("FFT Sum was sent successfully")

@@ -1,4 +1,5 @@
 import socket
+import sys
 import numpy
 from scipy.io import wavfile
 from numpy.fft import fft
@@ -15,7 +16,11 @@ class MyClient:
         # Connect the socket to the port where the server is listening
         server_address = (host, port)
         print('connecting to %s port %s' % server_address)
-        self.socket.connect(server_address)
+        try:
+            self.socket.connect(server_address)
+        except socket.error as msg:
+            print('Bind failed. Error Code : ' + str(msg))
+            sys.exit()
 
     def send_file(self, file, buffer_size, command):
         # Send command message (ex. 'SEND')
