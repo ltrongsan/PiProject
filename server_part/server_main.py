@@ -16,7 +16,8 @@ class ServerThread(Thread):
         self.buffer_size = 1024
         self.sampling_freq = 44100
 
-        self.client_list = {'1': ['192.168.2.2', '6868']}
+        self.client_dict = {'1': ['192.168.2.2', '6868']}
+        self.connection_list = []
         self.threads = []
 
         self.server_client_connection = server.ServerClientConnection(None, None)
@@ -28,11 +29,12 @@ class ServerThread(Thread):
                 self.server_client_connection.address = self.my_server.socket.accept()
             print('Connected with IP ' + self.server_client_connection.address[0] + ' port '
                   + str(self.server_client_connection.address[1]))
-
-            self.client_list[self.threads_id] = [self.server_client_connection.address[0],
+            self.connection_list.append([self.server_client_connection.connection,
+                                         self.server_client_connection.address])
+            self.client_dict[self.threads_id] = [self.server_client_connection.address[0],
                                                  self.server_client_connection.address[1]]
             new_thread = server.ClientThread(self.my_server, self.server_client_connection, self.threads_id)
-            self.client_tree.insert("", "end", text=self.threads_id, values=(self.client_list[self.threads_id]))
+            self.client_tree.insert("", "end", text=self.threads_id, values=(self.client_dict[self.threads_id]))
             new_thread.daemon = True
             new_thread.start()
             self.threads.append(new_thread)
@@ -69,10 +71,11 @@ class MyProgram:
         self.client_tree.heading('status', text='Status')
         self.client_tree.column('status', anchor='center', width=100)
 
-        for client_address in server_thread.client_list.keys():
+        for client_address in server_thread.client_dict.keys():
             self.client_tree.insert("", "end", text=client_address,
-                                    values=(server_thread.client_list[client_address]))
+                                    values=(server_thread.client_dict[client_address]))
         self.client_tree.grid(row=1)
+
 
         record_button = Button(master, text="RECORD",
                                command=lambda:
@@ -86,9 +89,10 @@ class MyProgram:
         self.master.destroy()
 
 
-root = Tk()
-MainProgram = MyProgram(root)
-root.title("MAIN PROGRAM")
-root.mainloop()
+if __name__ == "__main__":
+    root = Tk()
+    MainProgram = MyProgram(root)
+    root.title("MAIN PROGRAM")
+    root.mainloop()
 
 
