@@ -8,6 +8,9 @@ port = 8888
 client2 = client.MyClient(host, port)
 print('Connection Established')
 
+while 1:
+    pass
+
 # Receive and print out the sum of FFT spectral
 # client2.receive()
 # spectral_sum = float(client2.receive_message.decode())
