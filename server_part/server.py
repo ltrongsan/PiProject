@@ -60,26 +60,7 @@ class MyServer:
 
 
 class ServerClientConnection:
-
     def __init__(self, connection, address):
         self.connection = connection
         self.address = address
 
-
-class ClientThread(Thread):
-
-    def __init__(self, server, server_client_conn, client_ID):
-        Thread.__init__(self)
-        self.server = server
-        self.connection = server_client_conn.connection
-        self.client_IP = server_client_conn.address[0]
-        self.client_port = server_client_conn.address[1]
-        self.client_ID = client_ID
-        print('New connection added: ' + self.client_IP)
-        print('Thread number: ' + str(self.client_ID) + '\n')
-
-    def run(self):
-        while 1:
-            self.server.receive_message = self.connection.recv(1024)  # Receive message
-            spectral_sum = float(self.server.receive_message.decode())
-            print('The sum of FFT is : {0:.3f}'.format(spectral_sum))
