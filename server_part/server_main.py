@@ -83,8 +83,11 @@ class MyProgram:
         close_button = Button(master, text="CLOSE", command=self.onExit)
         close_button.grid(row=3, column=5)
 
+    def onRecord(self):
+        pass
+
     def onExit(self):
-        self.master.destroy()
+        pass
 
 
 root = Tk()

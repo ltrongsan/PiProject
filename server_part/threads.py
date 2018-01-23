@@ -50,7 +50,6 @@ class ClientThread(Thread):
         print('Thread number: ' + str(self.client_ID) + '\n')
 
     def run(self):
-        global client_tree
         while 1:
             self.server.receive_message = self.connection.recv(1024)  # Receive message
             spectral_sum = float(self.server.receive_message.decode())
