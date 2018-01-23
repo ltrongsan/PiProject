@@ -1,14 +1,12 @@
 import socket
 import sys
 import numpy
-from threading import Thread
 from scipy.io import wavfile
 from numpy.fft import fft
 import time
 
 
 class MyServer:
-
     def __init__(self, host, port):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)     # create an INET, STREAMing socket
         self.receive_message = None

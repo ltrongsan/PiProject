@@ -4,6 +4,7 @@ from threading import Thread
 from tkinter import *
 from tkinter.ttk import *
 from server_part import server
+from server_part import threads
 
 
 class ServerThread(Thread):
@@ -31,7 +32,7 @@ class ServerThread(Thread):
 
             self.client_list[self.threads_id] = [self.server_client_connection.address[0],
                                                  self.server_client_connection.address[1]]
-            new_thread = server.ClientThread(self.my_server, self.server_client_connection, self.threads_id)
+            new_thread = threads.ClientThread(self.my_server, self.server_client_connection, self.threads_id)
             self.client_tree.insert("", "end", text=self.threads_id, values=(self.client_list[self.threads_id]))
             new_thread.daemon = True
             new_thread.start()
