@@ -32,10 +32,6 @@ class ServerThread(Thread):
             self.threads.append(new_thread)
             self.threads_id = self.threads_id + 1
 
-            # self.my_server.receive_message = self.connection.recv(self.buffer_size)
-            # spectral_sum = float(self.my_server.receive_message.decode())
-            # print('The sum of FFT is : {0:.3f}'.format(spectral_sum))
-
 
 class ClientThread(Thread):
     def __init__(self, server, server_client_conn, client_ID):
