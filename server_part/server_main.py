@@ -7,43 +7,6 @@ from server_part import server
 from server_part import threads
 
 
-class ServerThread(Thread):
-
-    def __init__(self, my_server, client_tree):
-        Thread.__init__(self)
-        self.my_server = my_server
-        self.client_tree = client_tree
-        self.threads_id = 2
-        self.buffer_size = 1024
-        self.sampling_freq = 44100
-
-        self.client_list = {'1': ['192.168.2.2', '6868']}
-        self.threads = []
-
-        self.server_client_connection = server.ServerClientConnection(None, None)
-
-    def run(self):
-        while 1:
-            # wait to accept a connection - blocking call
-            self.server_client_connection.connection, \
-                self.server_client_connection.address = self.my_server.socket.accept()
-            print('Connected with IP ' + self.server_client_connection.address[0] + ' port '
-                  + str(self.server_client_connection.address[1]))
-
-            self.client_list[self.threads_id] = [self.server_client_connection.address[0],
-                                                 self.server_client_connection.address[1]]
-            new_thread = threads.ClientThread(self.my_server, self.server_client_connection, self.threads_id)
-            self.client_tree.insert("", "end", text=self.threads_id, values=(self.client_list[self.threads_id]))
-            new_thread.daemon = True
-            new_thread.start()
-            self.threads.append(new_thread)
-            self.threads_id = self.threads_id + 1
-
-            # self.my_server.receive_message = self.connection.recv(self.buffer_size)
-            # spectral_sum = float(self.my_server.receive_message.decode())
-            # print('The sum of FFT is : {0:.3f}'.format(spectral_sum))
-
-
 class MyProgram:
     def __init__(self, master):
         self.master = master
@@ -52,7 +15,7 @@ class MyProgram:
         self.client_tree = Treeview(master)
 
         self.server1 = server.MyServer(self.host, self.port)
-        server_thread = ServerThread(self.server1, self.client_tree)
+        server_thread = threads.ServerThread(self.server1, self.client_tree)
         server_thread.start()
 
         subtitle_text = StringVar()
@@ -69,10 +32,9 @@ class MyProgram:
         self.client_tree.column('port', anchor='center', width=70)
         self.client_tree.heading('status', text='Status')
         self.client_tree.column('status', anchor='center', width=100)
-
-        for client_address in server_thread.client_list.keys():
+        for client_address in server_thread.client_dict.keys():
             self.client_tree.insert("", "end", text=client_address,
-                                    values=(server_thread.client_list[client_address]))
+                                    values=(server_thread.client_dict[client_address]))
         self.client_tree.grid(row=1)
 
         record_button = Button(master, text="RECORD",
@@ -84,7 +46,9 @@ class MyProgram:
         close_button.grid(row=3, column=5)
 
     def onRecord(self):
-        pass
+        for item in self.client_tree.selection():
+            item_text = self.client_tree.item(item, "text")
+            print(item_text)
 
     def onExit(self):
         pass

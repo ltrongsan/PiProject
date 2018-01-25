@@ -7,10 +7,10 @@ class ServerThread(Thread):
         self.client_tree = client_tree
         Thread.__init__(self)
         self.my_server = my_server
-        self.threads_id = 2
+        self.threads_id = 1
         self.buffer_size = 1024
         self.sampling_freq = 44100
-        self.client_dict = {'1': ['192.168.2.2', '6868']}
+        self.client_dict = {}
         self.threads = []
         self.server_client_connection = server.ServerClientConnection(None, None)
         self.connection_dict = {}
@@ -21,11 +21,10 @@ class ServerThread(Thread):
             self.server_client_connection.connection, \
                 self.server_client_connection.address = self.my_server.socket.accept()
             self.connection_dict[self.threads_id] = self.server_client_connection.connection
-            print('Connected with IP ' + self.server_client_connection.address[0] + ' port '
-                  + str(self.server_client_connection.address[1]))
-
             self.client_dict[self.threads_id] = [self.server_client_connection.address[0],
                                                  self.server_client_connection.address[1]]
+            print('Connected with IP ' + self.server_client_connection.address[0] + ' port '
+                  + str(self.server_client_connection.address[1]))
             new_thread = ClientThread(self.my_server, self.server_client_connection, self.threads_id)
             self.client_tree.insert("", "end", text=self.threads_id, values=(self.client_dict[self.threads_id]))
             new_thread.daemon = True
