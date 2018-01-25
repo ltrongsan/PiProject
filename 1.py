@@ -17,7 +17,8 @@ class App:
     def on_tree_select(self, event):
         print("selected items:")
         for item in self.tree.selection():
-            item_text = self.tree.item(item, "text")
+            # item_text = self.tree.item(item, "text")
+            item_text = self.tree.item(item)
             print(item_text)
 
 

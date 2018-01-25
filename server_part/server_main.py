@@ -1,6 +1,5 @@
 import socket
-import sys
-from threading import Thread
+import time
 from tkinter import *
 from tkinter.ttk import *
 from server_part import server
@@ -15,8 +14,8 @@ class MyProgram:
         self.client_tree = Treeview(master)
 
         self.server1 = server.MyServer(self.host, self.port)
-        server_thread = threads.ServerThread(self.server1, self.client_tree)
-        server_thread.start()
+        self.server_thread = threads.ServerThread(self.server1, self.client_tree)
+        self.server_thread.start()
 
         subtitle_text = StringVar()
         subtitle_text.set("MAIN PROGRAM")
@@ -32,14 +31,13 @@ class MyProgram:
         self.client_tree.column('port', anchor='center', width=70)
         self.client_tree.heading('status', text='Status')
         self.client_tree.column('status', anchor='center', width=100)
-        for client_address in server_thread.client_dict.keys():
+        for client_address in self.server_thread.client_dict.keys():
             self.client_tree.insert("", "end", text=client_address,
-                                    values=(server_thread.client_dict[client_address]))
+                                    values=(self.server_thread.client_dict[client_address]))
         self.client_tree.grid(row=1)
 
         record_button = Button(master, text="RECORD",
-                               command=lambda:
-                               self.server1.send_record_command(server_thread.server_client_connection.connection))
+                               command=self.onRecord)
         record_button.grid(row=1, column=5)
 
         close_button = Button(master, text="CLOSE", command=self.onExit)
@@ -47,16 +45,23 @@ class MyProgram:
 
     def onRecord(self):
         for item in self.client_tree.selection():
-            item_text = self.client_tree.item(item, "text")
-            print(item_text)
+            client_id = self.client_tree.item(item, 'text')
+            conn = self.server_thread.connection_dict[client_id]
+            print(client_id)
+            print(conn)
+            while 1:
+                command = 'RECORD'
+                conn.send(command.encode())
+                time.sleep(10)
 
     def onExit(self):
         pass
 
 
-root = Tk()
-MainProgram = MyProgram(root)
-root.title("MAIN PROGRAM")
-root.mainloop()
+if __name__ == "__main__":
+    root = Tk()
+    MainProgram = MyProgram(root)
+    root.title("MAIN PROGRAM")
+    root.mainloop()
 
 
