@@ -1,12 +1,13 @@
 import socket
 import sys
 import numpy
+import time
 from scipy.io import wavfile
 from numpy.fft import fft
 
 
 class MyClient:
-    def __init__(self, host, port):
+    def __init__(self, host, port, type):
         self.client_IP = socket.gethostname()
         self.send_message = None
         self.receive_message = None
@@ -18,6 +19,8 @@ class MyClient:
         print('connecting to %s port %s' % server_address)
         try:
             self.socket.connect(server_address)
+            self.socket.send(type.encode())
+            time.sleep(2)
         except socket.error as msg:
             print('Bind failed. Error Code : ' + str(msg))
             sys.exit()

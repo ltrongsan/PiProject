@@ -7,7 +7,7 @@ import RecordAudio
 host = socket.gethostname()
 port = 8888
 
-client1 = client.MyClient(host, port)
+client1 = client.MyClient(host, port, 'MICROPHONE')
 print('Connection Established')
 
 while 1:
