@@ -2,8 +2,10 @@ import socket
 import sys
 import numpy
 import time
+import threading
 from scipy.io import wavfile
 from numpy.fft import fft
+import matplotlib.pyplot as plt
 
 
 class MyClient:
@@ -58,6 +60,16 @@ class MyClient:
         fft_result = fft(sound_data)
         fft_length = int(len(fft_result) / 2)           # Take only half of the FFT
         fft_result = abs(fft_result[0:fft_length - 1])  # Get the absolute value
+        self.plot_fft(fft_result)
+        # t1 = threading.Thread(target=lambda: self.plot_fft(fft))
+        # t1.start()
+        # t1.join()
         fft_result = fft_result / max(fft_result)       # Normalize the result
         spectral_sum = numpy.sum(fft_result)
         self.send_message = str(spectral_sum)
+
+    def plot_fft(self, fft):
+        print(fft)
+        # fig, ax = plt.subplots()
+        # ax.plot(fft)
+        # plt.show()
