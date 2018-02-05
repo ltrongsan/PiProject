@@ -6,13 +6,13 @@ import pygame
 def start_true_song():
     print("Start True Song")
     pygame.mixer.music.load("True.mp3")
-    pygame.mixer.music.play(-1)
+    pygame.mixer.music.play(2)
 
 
 def start_false_song():
     print("Would False Song")
     pygame.mixer.music.load("False.mp3")
-    pygame.mixer.music.play(-1)
+    pygame.mixer.music.play(2)
 
 
 def stop_song():

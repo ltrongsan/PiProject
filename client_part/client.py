@@ -72,5 +72,23 @@ class MyClient:
                                     # frq = frq[range(int(n / 2))]  # one side frequency range
 
         fig, ax = plt.subplots()
-        ax.plot(frq,fft)
+        ax.plot(frq, fft)
         plt.show()
+
+    def receive_sound(self, isTrue):
+        if isTrue:
+            print('Receive TRUE Sound')
+            file_name = "True.wav"
+        else:
+            print('Receive FALSE Sound')
+            file_name = "False.wav"
+
+        file = open(file_name, "w+b")
+        while True:
+            data = self.socket.recv(1024)
+            if not data:
+                break
+            file.write(data)
+            print(str(list(data)))
+
+        print("Done.")
