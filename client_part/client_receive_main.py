@@ -3,19 +3,19 @@ from client_part import client
 import pygame
 
 
-def start_true_song(self):
-    print("Would Start Song")
+def start_true_song():
+    print("Start True Song")
     pygame.mixer.music.load("True.mp3")
     pygame.mixer.music.play(-1)
 
 
-def start_false_song(self):
-    print("Would Start Song")
+def start_false_song():
+    print("Would False Song")
     pygame.mixer.music.load("False.mp3")
     pygame.mixer.music.play(-1)
 
 
-def stop_song(self):
+def stop_song():
     print("Would Stop Song")
     pygame.mixer.music.stop()
 

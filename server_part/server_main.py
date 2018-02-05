@@ -20,6 +20,7 @@ class MyProgram:
 
         self.spectral_sum = None
 
+        # region Create Table of Clients
         subtitle_text = StringVar()
         subtitle_text.set("MAIN PROGRAM")
         subtitle = Label(master, textvariable=subtitle_text)
@@ -34,11 +35,14 @@ class MyProgram:
         self.client_tree.column('port', anchor='center', width=70)
         self.client_tree.heading('status', text='Status')
         self.client_tree.column('status', anchor='center', width=100)
+
         for client_address in self.server_thread.client_dict.keys():
             self.client_tree.insert("", "end", text=client_address,
                                     values=(self.server_thread.client_dict[client_address]))
         self.client_tree.grid(row=1)
+        # endregion
 
+        # region Create Buttons
         configure_true_sound_button = Button(master, text="CONFIGURE TRUE SOUND",
                                              command=self.onConfigureTrueSound)
         configure_true_sound_button.grid(row=3, column=0, sticky=W)
@@ -49,6 +53,7 @@ class MyProgram:
         record_button.grid(row=3, column=1)
         close_button = Button(master, text="CLOSE", command=self.onExit)
         close_button.grid(row=4, column=1)
+        # endregion
 
     def onConfigureTrueSound(self):
         pass

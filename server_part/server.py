@@ -1,9 +1,10 @@
 import socket
 import sys
 import numpy
+import time
+import matplotlib.pyplot as plt
 from scipy.io import wavfile
 from numpy.fft import fft
-import time
 
 
 class MyServer:
@@ -56,8 +57,17 @@ class MyServer:
             connection.send(self.send_message.encode())
             time.sleep(10)
 
-    def plot_fft(self):
-        pass
+    def plot_fft(self, fft):
+        print(fft)
+        Fs = 44100                      # sampling rate
+        n = len(fft)                    # length of the signal
+        k = numpy.arange(n)
+        T = n / Fs
+        frq = k / T                     # two sides frequency range
+        # frq = frq[range(int(n / 2))]  # one side frequency range
+        fig, ax = plt.subplots()
+        ax.plot(frq, fft)
+        plt.show()
 
 
 class ServerClientConnection:

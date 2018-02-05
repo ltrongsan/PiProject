@@ -65,11 +65,11 @@ class MyClient:
         print(fft)
 
         Fs = 44100                  # sampling rate
-        n = len(fft)      # length of the signal
+        n = len(fft)                # length of the signal
         k = numpy.arange(n)
         T = n / Fs
-        frq = k / T  # two sides frequency range
-        # frq = frq[range(int(n / 2))]  # one side frequency range
+        frq = k / T                 # two sides frequency range
+                                    # frq = frq[range(int(n / 2))]  # one side frequency range
 
         fig, ax = plt.subplots()
         ax.plot(frq,fft)
