@@ -45,14 +45,7 @@ class MyClient:
             self.file_size += buffer_size
         print("Done Sending")
         self.socket.shutdown(socket.SHUT_WR)
-        # print(self.socket.recv(1024))
         self.socket.close()
-
-    def receive(self):
-        command = 'RECEIVE'
-        self.send_message = command.encode()    # Send command message 'RECEIVE'
-        self.socket.send(self.send_message)
-        self.receive_message = self.socket.recv(1024)
 
     def sum_fourier_transform(self):
         rate, sound_data = wavfile.read('output.wav')
