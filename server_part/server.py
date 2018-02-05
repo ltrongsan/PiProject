@@ -56,6 +56,9 @@ class MyServer:
             connection.send(self.send_message.encode())
             time.sleep(10)
 
+    def plot_fft(self):
+        pass
+
 
 class ServerClientConnection:
     def __init__(self, connection, address):

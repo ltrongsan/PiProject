@@ -39,12 +39,22 @@ class MyProgram:
                                     values=(self.server_thread.client_dict[client_address]))
         self.client_tree.grid(row=1)
 
-        record_button = Button(master, text="RECORD",
-                               command=self.thread_record_button)
-        record_button.grid(row=1, column=5)
-
+        configure_true_sound_button = Button(master, text="CONFIGURE TRUE SOUND",
+                                             command=self.onConfigureTrueSound)
+        configure_true_sound_button.grid(row=3, column=0, sticky=W)
+        configure_false_sound_button = Button(master, text="CONFIGURE FALSE SOUND",
+                                              command=self.onConfigureFalseSound)
+        configure_false_sound_button.grid(row=4, column=0, sticky=W)
+        record_button = Button(master, text="RECORD", command=self.thread_record_button)
+        record_button.grid(row=3, column=1)
         close_button = Button(master, text="CLOSE", command=self.onExit)
-        close_button.grid(row=3, column=5)
+        close_button.grid(row=4, column=1)
+
+    def onConfigureTrueSound(self):
+        pass
+
+    def onConfigureFalseSound(self):
+        pass
 
     def thread_record_button(self):
         th_record = threading.Thread(target=self.onRecord, args=[])
@@ -61,6 +71,7 @@ class MyProgram:
 
         Button(win, text='Close', command=win.destroy).grid(row=1, sticky='we')
 
+        # create a client list UI
         for item in self.client_tree.selection():
             client_id = self.client_tree.item(item, 'text')
             conn = self.server_thread.connection_dict[client_id]
