@@ -2,7 +2,8 @@ import socket
 import sys
 import numpy
 import time
-import threading
+import pygame
+import pickle
 from scipy.io import wavfile
 from numpy.fft import fft
 import matplotlib.pyplot as plt
@@ -16,6 +17,9 @@ class MyClient:
         self.file_size = 0
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)     # create an INET, STREAMing socket
 
+        self.fft = None
+        self.spectral_sum = None
+
         # Connect the socket to the port where the server is listening
         server_address = (host, port)
         print('connecting to %s port %s' % server_address)
@@ -27,7 +31,7 @@ class MyClient:
             print('Bind failed. Error Code : ' + str(msg))
             sys.exit()
 
-    def send_file(self, file, buffer_size, command):
+    def send_record_file(self, file, buffer_size, command):
         # Send command message (ex. 'SEND')
         self.send_message = command.encode()
         self.socket.send(self.send_message)
@@ -47,17 +51,27 @@ class MyClient:
         self.socket.shutdown(socket.SHUT_WR)
         self.socket.close()
 
+    def send_fft(self):
+        rate, sound_data = wavfile.read('output.wav')
+        self.fourier_transform(sound_data)
+
+    def receive_fft(self):
+        pass
+
+    def fourier_transform(self, input_data):
+        input_data = input_data / (2. ** 15)  # Convert sound data with 16 Bit
+        self.fft = fft(input_data)
+        fft_length = int(len(self.fft) / 2)  # Take only half of the FFT
+        self.fft = abs(self.fft[0:fft_length - 1])  # Get the absolute value
+
     def sum_fourier_transform(self):
         rate, sound_data = wavfile.read('output.wav')
         sound_data = sound_data / (2. ** 15)            # Convert sound data with 16 Bit
         fft_result = fft(sound_data)
         fft_length = int(len(fft_result) / 2)           # Take only half of the FFT
         fft_result = abs(fft_result[0:fft_length - 1])  # Get the absolute value
-        self.plot_fft(fft_result)
-        # t1 = threading.Thread(target=lambda: self.plot_fft(fft))
-        # t1.start()
-        # t1.join()
         fft_result = fft_result / max(fft_result)       # Normalize the result
+        self.fft = fft_result
         spectral_sum = numpy.sum(fft_result)
         self.send_message = str(spectral_sum)
 
@@ -91,4 +105,18 @@ class MyClient:
             file.write(data)
             print(str(list(data)))
 
-        print("Done.")
+        print("Done")
+
+    def play_true_song(self):
+        print("Play True Song")
+        pygame.mixer.music.load("Cat.mp3")
+        pygame.mixer.music.play(2)
+
+    def play_false_song(self):
+        print("Play False Song")
+        pygame.mixer.music.load("Laugh.mp3")
+        pygame.mixer.music.play(2)
+
+    def stop_song(self):
+        print("Stop playing Song")
+        pygame.mixer.music.stop()

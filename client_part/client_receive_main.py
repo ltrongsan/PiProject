@@ -3,23 +3,6 @@ from client_part import client
 import pygame
 
 
-def start_true_song():
-    print("Start True Song")
-    pygame.mixer.music.load("True.mp3")
-    pygame.mixer.music.play(2)
-
-
-def start_false_song():
-    print("Would False Song")
-    pygame.mixer.music.load("False.mp3")
-    pygame.mixer.music.play(2)
-
-
-def stop_song():
-    print("Would Stop Song")
-    pygame.mixer.music.stop()
-
-
 host = socket.gethostname()
 port = 8888
 
@@ -34,7 +17,7 @@ while 1:
     spectral_sum = float(client2.receive_message.decode())
     print(spectral_sum)
     if spectral_sum > 650:
-        start_true_song()
+        client2.play_true_song()
     else:
-        start_false_song()
+        client2.play_false_song()
 

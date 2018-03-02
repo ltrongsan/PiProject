@@ -15,6 +15,9 @@ class MyServer:
         self.file_size = 0
         self.buffer_size = 1024
 
+        self.spectral_sum = None
+        self.fft_result = None
+
         print('Socket created')
 
         # Bind socket to host and port
@@ -41,6 +44,17 @@ class MyServer:
             self.file_size += self.buffer_size
         file.close()
 
+    def send_command(self, connection, command):
+        self.send_message = command
+        connection.send(self.send_message.encode())
+        time.sleep(1)
+
+    def receive_fft(self, connection):
+        pass
+
+    def send_fft_spectral_sum(self, connection):
+        pass
+
     def sum_fourier_transform(self):
         rate, sound_data = wavfile.read('test.wav')
         sound_data = sound_data / (2. ** 15)
@@ -50,12 +64,6 @@ class MyServer:
         fft_result = fft_result / max(fft_result)
         spectral_sum = numpy.sum(fft_result)
         self.send_message = str(spectral_sum)
-
-    def send_record_command(self, connection):
-        while 1:
-            self.send_message = 'RECORD'
-            connection.send(self.send_message.encode())
-            time.sleep(10)
 
     def plot_fft(self, fft):
         print(fft)

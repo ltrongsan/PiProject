@@ -67,14 +67,17 @@ class MyProgram:
 
     def onRecord(self):
         win = Toplevel()         # create child window
+        frame = Frame(win)
+        frame.pack()
 
-        scrollbar = Scrollbar(win)
-        scrollbar.grid()
+        scrollbar = Scrollbar(frame)
+        scrollbar.pack(side=RIGHT, fill=Y)
 
-        listbox = Listbox(win, width=150)
-        listbox.grid(row=0)
+        listbox = Listbox(frame, width=150, yscrollcommand=scrollbar.set)
+        listbox.config(yscrollcommand=scrollbar.set)
+        scrollbar.config(command=listbox.yview)
 
-        Button(win, text='Close', command=win.destroy).grid(row=1, sticky='we')
+        Button(win, text='Close', command=win.destroy).pack(side=BOTTOM)
 
         # create a client list UI
         for item in self.client_tree.selection():
@@ -84,21 +87,20 @@ class MyProgram:
             listbox.insert(END, client_id)
             print(conn)
             listbox.insert(END, conn)
+            listbox.pack(side=LEFT, fill=BOTH)
 
-            # attach listbox to scrollbar
-            listbox.config(yscrollcommand=scrollbar.set)
-            scrollbar.config(command=listbox.yview)
+            self.record(conn, listbox)
 
-            self.send_record_command(conn, listbox)
+        # attach listbox to scrollbar
+        listbox.config(yscrollcommand=scrollbar.set)
+        scrollbar.config(command=listbox.yview)
 
     def onExit(self):
         pass
 
-    def send_record_command(self, conn, listbox):
+    def record(self, conn, listbox):
         while 1:
-            command = 'RECORD'
-            conn.send(command.encode())
-            time.sleep(10)
+            self.server1.send_command(conn, 'RECORD')
             self.spectral_sum = conn.recv(1024).decode()
             self.spectral_sum = float(self.spectral_sum)
             message = 'The sum of FFT is : {0:.3f}'.format(self.spectral_sum)
@@ -108,6 +110,8 @@ class MyProgram:
                 message = str(self.spectral_sum)
                 conn_2 = self.server_thread.connection_dict[client_id]
                 conn_2.send(message.encode())
+
+            time.sleep(8)
 
 
 if __name__ == "__main__":
