@@ -50,7 +50,8 @@ class MyServer:
         time.sleep(1)
 
     def receive_fft(self, connection):
-        pass
+        serialized = None
+        self.receive_message = connection.recv(self.buffer_size)
 
     def send_fft_spectral_sum(self, connection):
         pass

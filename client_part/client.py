@@ -54,6 +54,20 @@ class MyClient:
     def send_fft(self):
         rate, sound_data = wavfile.read('output.wav')
         self.fourier_transform(sound_data)
+        serialized = pickle.dumps(self.fft)
+        n = 0
+        while n < len(serialized):
+            if n < len(serialized) - 1023:
+                print('Sending...')
+                self.send_message = serialized[n:n+1023]
+                self.socket.send(self.send_message)
+                n = n + 1024
+            else:
+                print('Sending...')
+                self.send_message = serialized[n:len(serialized)]
+                self.socket.send(self.send_message)
+                n = len(serialized)
+        self.send_message = None
 
     def receive_fft(self):
         pass
