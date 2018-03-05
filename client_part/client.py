@@ -55,13 +55,16 @@ class MyClient:
         rate, sound_data = wavfile.read('output.wav')
         self.fourier_transform(sound_data)
         serialized = pickle.dumps(self.fft)
+        print(serialized)
+        print(type(serialized))
+        print(len(serialized))
         n = 0
         while n < len(serialized):
-            if n < len(serialized) - 1023:
+            if n < len(serialized) - 4095:
                 print('Sending...')
-                self.send_message = serialized[n:n+1023]
+                self.send_message = serialized[n:n+4095]
                 self.socket.send(self.send_message)
-                n = n + 1024
+                n = n + 4096
             else:
                 print('Sending...')
                 self.send_message = serialized[n:len(serialized)]

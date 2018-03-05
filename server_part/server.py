@@ -2,6 +2,7 @@ import socket
 import sys
 import numpy
 import time
+import pickle
 import matplotlib.pyplot as plt
 from scipy.io import wavfile
 from numpy.fft import fft
@@ -32,7 +33,7 @@ class MyServer:
         self.socket.listen(5)
         print('Socket now listening')
 
-    def receive_file(self, connection):
+    def receive_record_file(self, connection):
         file = open('test.wav', 'wb')
         self.receive_message = connection.recv(self.buffer_size)
         file.write(self.receive_message)
@@ -50,12 +51,18 @@ class MyServer:
         time.sleep(1)
 
     def receive_fft(self, connection):
-        serialized = None
         self.receive_message = connection.recv(self.buffer_size)
+        self.receive_message = connection.recv(self.buffer_size)
+        serialized = bytearray(self.receive_message)
+        print(serialized)
         while self.receive_message:
             print("Receiving")
-            serialized += self.receive_message
+            serialized.extend(self.receive_message)
+            self.receive_message = connection.recv(self.buffer_size)
+            print(len(serialized))
         print("Done Receiving")
+        print(serialized)
+        self.fft_result = pickle.loads(serialized)
 
     def send_fft_spectral_sum(self, connection):
         pass
