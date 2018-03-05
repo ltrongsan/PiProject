@@ -68,6 +68,7 @@ class MyClient:
                 self.socket.send(self.send_message)
                 n = len(serialized)
         self.send_message = None
+        time.sleep(2)
 
     def receive_fft(self):
         pass

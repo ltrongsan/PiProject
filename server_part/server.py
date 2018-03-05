@@ -52,6 +52,10 @@ class MyServer:
     def receive_fft(self, connection):
         serialized = None
         self.receive_message = connection.recv(self.buffer_size)
+        while self.receive_message:
+            print("Receiving")
+            serialized += self.receive_message
+        print("Done Receiving")
 
     def send_fft_spectral_sum(self, connection):
         pass
