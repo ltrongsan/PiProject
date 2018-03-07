@@ -48,30 +48,36 @@ class MyClient:
             self.send_message = data
             self.file_size += buffer_size
         print("Done Sending")
-        self.socket.shutdown(socket.SHUT_WR)
-        self.socket.close()
 
     def send_fft(self):
+        buffer_size = 16
         rate, sound_data = wavfile.read('output.wav')
         self.fourier_transform(sound_data)
         serialized = pickle.dumps(self.fft)
+        obj_size = len(serialized)
         print(serialized)
         print(type(serialized))
         print(len(serialized))
-        n = 0
-        while n < len(serialized):
-            if n < len(serialized) - 4095:
+        packet_number = 0
+        while obj_size > 0:
+            if obj_size > buffer_size:
                 print('Sending...')
-                self.send_message = serialized[n:n+4095]
+                self.send_message = serialized[buffer_size*packet_number:
+                                               buffer_size*(packet_number+1)-1]
+                print(self.send_message)
                 self.socket.send(self.send_message)
-                n = n + 4096
+                # time.sleep(2)
+                self.send_message = None
+                obj_size = obj_size - buffer_size
+                packet_number += 1
             else:
                 print('Sending...')
-                self.send_message = serialized[n:len(serialized)]
+                self.send_message = serialized[buffer_size*packet_number: len(serialized)]
                 self.socket.send(self.send_message)
-                n = len(serialized)
+                obj_size = 0
+                break
+                # time.sleep(2)
         self.send_message = None
-        time.sleep(2)
 
     def receive_fft(self):
         pass
