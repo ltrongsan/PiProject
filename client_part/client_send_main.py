@@ -18,6 +18,5 @@ while 1:
         time.sleep(3)
 
         # Send FFT sum
-        client1.sum_fourier_transform()
-        client1.socket.send(client1.send_message.encode())
-        print("FFT Sum was sent successfully")
+        client1.send_fft()
+        print("FFT was sent successfully")

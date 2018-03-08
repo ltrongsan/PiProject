@@ -52,19 +52,17 @@ class MyServer:
 
     def receive_fft(self, connection):
         buffer_size = 4096
+        self.send_command(connection, "GET FFT")
         self.receive_message = connection.recv(buffer_size)
+        obj_size = int(self.receive_message)
         self.receive_message = connection.recv(buffer_size)
         serialized = bytearray(self.receive_message)
-        while self.receive_message:
+        rev_size = len(self.receive_message)
+        while rev_size < obj_size:
             print("Receiving")
-            serialized.extend(self.receive_message)
             self.receive_message = connection.recv(buffer_size)
-            print(len(serialized))
-        print("Done Receiving")
-        serialized = bytes(serialized)
-        print(len(serialized))
-        print(serialized[11:13])
-        self.fft_result = pickle.loads(serialized)
+            serialized.extend(self.receive_message)
+            rev_size += len(self.receive_message)
 
     def send_fft_spectral_sum(self, connection):
         pass

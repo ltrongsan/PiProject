@@ -17,6 +17,7 @@ class MyClient:
         self.file_size = 0
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)     # create an INET, STREAMing socket
 
+        self.command = None
         self.fft = None
         self.spectral_sum = None
 
@@ -50,37 +51,44 @@ class MyClient:
         print("Done Sending")
 
     def send_fft(self):
-        buffer_size = 16
+        buffer_size = 4096
+        packet_number = 0
+        sent_size = 0
+
+        self.receive_command()
         rate, sound_data = wavfile.read('output.wav')
         self.fourier_transform(sound_data)
         serialized = pickle.dumps(self.fft)
         obj_size = len(serialized)
-        print(serialized)
-        print(type(serialized))
-        print(len(serialized))
-        packet_number = 0
-        while obj_size > 0:
-            if obj_size > buffer_size:
-                print('Sending...')
-                self.send_message = serialized[buffer_size*packet_number:
-                                               buffer_size*(packet_number+1)-1]
-                print(self.send_message)
-                self.socket.send(self.send_message)
-                # time.sleep(2)
-                self.send_message = None
-                obj_size = obj_size - buffer_size
-                packet_number += 1
-            else:
-                print('Sending...')
-                self.send_message = serialized[buffer_size*packet_number: len(serialized)]
-                self.socket.send(self.send_message)
-                obj_size = 0
-                break
-                # time.sleep(2)
+        self.send_message = str(obj_size)
+
+        if self.command == "GET FFT":
+            self.socket.send(self.send_message.encode())
+            self.send_message = None
+            while obj_size > 0:
+                if obj_size > buffer_size:
+                    print('Sending...')
+                    self.send_message = serialized[buffer_size*packet_number:
+                                                   buffer_size*packet_number + buffer_size]
+                    self.socket.send(self.send_message)
+                    self.send_message = None
+                    obj_size = obj_size - buffer_size
+                    packet_number += 1
+                    sent_size += len(serialized[buffer_size*packet_number:
+                                                buffer_size*packet_number + buffer_size])
+                else:
+                    self.send_message = serialized[buffer_size*packet_number: len(serialized)]
+                    self.socket.send(self.send_message)
+                    sent_size += len(serialized[buffer_size*packet_number: len(serialized)])
+                    break
         self.send_message = None
 
     def receive_fft(self):
         pass
+
+    def receive_command(self):
+        self.command = self.socket.recv(2048)
+        self.command = self.command.decode()
 
     def fourier_transform(self, input_data):
         input_data = input_data / (2. ** 15)  # Convert sound data with 16 Bit
