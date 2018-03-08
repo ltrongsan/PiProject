@@ -103,9 +103,8 @@ class MyProgram:
             self.server1.send_command(conn, 'RECORD')
             self.server1.receive_fft(conn)
             print(self.server1.fft_result)
-            # self.spectral_sum = conn.recv(1024).decode()
-            # self.spectral_sum = float(self.spectral_sum)
-            # message = 'The sum of FFT is : {0:.3f}'.format(self.spectral_sum)
+            self.spectral_sum = float(self.spectral_sum)
+            message = 'The sum of FFT is : {0:.3f}'.format(self.spectral_sum)
             listbox.insert(END, message)
 
             for client_id in self.server_thread.loudspeaker_client_list:
