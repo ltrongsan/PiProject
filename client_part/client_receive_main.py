@@ -14,9 +14,9 @@ pygame.mixer.init()
 while 1:
     # Receive and print out the sum of FFT spectral
     client2.receive_message = client2.socket.recv(1024)
-    spectral_sum = float(client2.receive_message.decode())
-    print(spectral_sum)
-    if spectral_sum > 650:
+    message = client2.receive_message.decode()
+    print(message)
+    if message == 'TRUE':
         client2.play_true_song()
     else:
         client2.play_false_song()
