@@ -63,19 +63,14 @@ class MyServer:
             self.receive_message = connection.recv(buffer_size)
             serialized.extend(self.receive_message)
             rev_size += len(self.receive_message)
+        self.fft_result = pickle.loads(serialized)
 
     def send_fft_spectral_sum(self, connection):
         pass
 
-    def sum_fourier_transform(self):
-        rate, sound_data = wavfile.read('test.wav')
-        sound_data = sound_data / (2. ** 15)
-        fft_result = fft(sound_data)
-        fft_length = int(len(fft_result) / 2)
-        fft_result = abs(fft_result[0:fft_length - 1])
-        fft_result = fft_result / max(fft_result)
-        spectral_sum = numpy.sum(fft_result)
-        self.send_message = str(spectral_sum)
+    def calculate_fft_spectral_sum(self):
+        self.fft_result = self.fft_result / max(self.fft_result)
+        self.spectral_sum = numpy.sum(self.fft_result)
 
     def plot_fft(self, fft):
         print(fft)

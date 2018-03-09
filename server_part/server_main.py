@@ -18,8 +18,6 @@ class MyProgram:
         self.server_thread = threads.ServerThread(self.server1, self.client_tree)
         self.server_thread.start()
 
-        self.spectral_sum = None
-
         # region Create Table of Clients
         subtitle_text = StringVar()
         subtitle_text.set("MAIN PROGRAM")
@@ -103,12 +101,13 @@ class MyProgram:
             self.server1.send_command(conn, 'RECORD')
             self.server1.receive_fft(conn)
             print(self.server1.fft_result)
-            self.spectral_sum = float(self.spectral_sum)
-            message = 'The sum of FFT is : {0:.3f}'.format(self.spectral_sum)
+            self.server1.calculate_fft_spectral_sum()
+            self.server1.spectral_sum = float(self.server1.spectral_sum)
+            message = 'The sum of FFT is : {0:.3f}'.format(self.server1.spectral_sum)
             listbox.insert(END, message)
 
             for client_id in self.server_thread.loudspeaker_client_list:
-                message = str(self.spectral_sum)
+                message = str(self.server1.spectral_sum)
                 conn_2 = self.server_thread.connection_dict[client_id]
                 conn_2.send(message.encode())
 
