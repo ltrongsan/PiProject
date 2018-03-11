@@ -9,7 +9,6 @@ from server_part import threads
 
 class MyProgram:
     def __init__(self, master):
-        self.master = master
         self.host = socket.gethostname()
         self.port = 8888
         self.client_tree = Treeview(master)
@@ -17,6 +16,15 @@ class MyProgram:
         self.server1 = server.MyServer(self.host, self.port)
         self.server_thread = threads.ServerThread(self.server1, self.client_tree)
         self.server_thread.start()
+
+        record_frame = Frame(master)
+        record_frame.pack(side=TOP)
+        camera_frame = Frame(master)
+        camera_frame.pack(side=TOP)
+        configuration_frame = Frame(master)
+        configuration_frame.pack(side=BOTTOM)
+        final_frame = Frame(master)
+        final_frame.pack(side=BOTTOM)
 
         # region Create Table of Clients
         subtitle_text = StringVar()
@@ -48,9 +56,15 @@ class MyProgram:
                                               command=self.onConfigureFalseSound)
         configure_false_sound_button.grid(row=4, column=0, sticky=W)
         record_button = Button(master, text="RECORD", command=self.thread_record_button)
-        record_button.grid(row=3, column=1)
+        record_button.grid(row=1, column=3)
         close_button = Button(master, text="CLOSE", command=self.onExit)
-        close_button.grid(row=4, column=1)
+        close_button.grid(row=1, column=4)
+        play_true_sound_button = Button(master, text="PLAY TRUE SOUND",
+                                             command=self.onExit)
+        play_true_sound_button.grid(row=4, column=3, sticky=W)
+        play_false_sound_button = Button(master, text="PLAY FALSE SOUND",
+                                        command=self.onExit)
+        play_false_sound_button.grid(row=4, column=3, sticky=W)
         # endregion
 
     def onConfigureTrueSound(self):
