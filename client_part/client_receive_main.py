@@ -17,7 +17,15 @@ while 1:
     message = client2.receive_message.decode()
     print(message)
     if message == 'TRUE':
-        client2.play_true_song()
+        client2.play_true_song(2)
+    elif message == 'FALSE':
+        client2.play_false_song(2)
+    elif message == 'STOP':
+        client2.stop_song()
+    elif message == 'PLAY TRUE':
+        client2.play_true_song(-1)
+    elif message == 'PLAY FALSE':
+        client2.play_false_song(-1)
     else:
-        client2.play_false_song()
+        continue
 

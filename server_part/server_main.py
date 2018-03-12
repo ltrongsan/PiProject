@@ -9,24 +9,26 @@ from server_part import threads
 
 class MyProgram:
     def __init__(self, master):
+
+        record_frame = Frame(master)
+        record_frame.grid(row=0, column=0)
+        camera_frame = Frame(master)
+        camera_frame.grid(row=0, column=1)
+        configuration_frame = Frame(master)
+        configuration_frame.grid(row=1, column=0)
+        loudspeaker_frame = Frame(master)
+        loudspeaker_frame.grid(row=1, column=1)
+
         self.host = socket.gethostname()
         self.port = 8888
-        self.client_tree = Treeview(master)
 
+        self.client_tree = Treeview(record_frame)
         self.server1 = server.MyServer(self.host, self.port)
         self.server_thread = threads.ServerThread(self.server1, self.client_tree)
         self.server_thread.start()
 
-        record_frame = Frame(master)
-        record_frame.pack(side=TOP)
-        camera_frame = Frame(master)
-        camera_frame.pack(side=TOP)
-        configuration_frame = Frame(master)
-        configuration_frame.pack(side=BOTTOM)
-        final_frame = Frame(master)
-        final_frame.pack(side=BOTTOM)
-
         # region Create Table of Clients
+
         subtitle_text = StringVar()
         subtitle_text.set("MAIN PROGRAM")
         subtitle = Label(master, textvariable=subtitle_text)
@@ -45,26 +47,32 @@ class MyProgram:
         for client_address in self.server_thread.client_dict.keys():
             self.client_tree.insert("", "end", text=client_address,
                                     values=(self.server_thread.client_dict[client_address]))
-        self.client_tree.grid(row=1)
+        self.client_tree.grid(row=1, column=1)
         # endregion
 
         # region Create Buttons
-        configure_true_sound_button = Button(master, text="CONFIGURE TRUE SOUND",
+
+        record_button = Button(configuration_frame, text="RECORD", command=self.thread_record_button)
+        record_button.grid(row=1, column=0)
+        close_button = Button(configuration_frame, text="CLOSE", command=self.onExit)
+        close_button.grid(row=2, column=0)
+
+        configure_true_sound_button = Button(configuration_frame, text="CONFIGURE TRUE SOUND",
                                              command=self.onConfigureTrueSound)
-        configure_true_sound_button.grid(row=3, column=0, sticky=W)
-        configure_false_sound_button = Button(master, text="CONFIGURE FALSE SOUND",
+        configure_true_sound_button.grid(row=1, column=2, sticky=W)
+        configure_false_sound_button = Button(configuration_frame, text="CONFIGURE FALSE SOUND",
                                               command=self.onConfigureFalseSound)
-        configure_false_sound_button.grid(row=4, column=0, sticky=W)
-        record_button = Button(master, text="RECORD", command=self.thread_record_button)
-        record_button.grid(row=1, column=3)
-        close_button = Button(master, text="CLOSE", command=self.onExit)
-        close_button.grid(row=1, column=4)
-        play_true_sound_button = Button(master, text="PLAY TRUE SOUND",
-                                             command=self.onExit)
-        play_true_sound_button.grid(row=4, column=3, sticky=W)
-        play_false_sound_button = Button(master, text="PLAY FALSE SOUND",
-                                        command=self.onExit)
-        play_false_sound_button.grid(row=4, column=3, sticky=W)
+        configure_false_sound_button.grid(row=2, column=2, sticky=W)
+
+        play_true_sound_button = Button(loudspeaker_frame, text="PLAY TRUE SOUND",
+                                        command=self.onPlayTrueSound)
+        play_true_sound_button.grid(row=0, column=0, sticky=W)
+        play_false_sound_button = Button(loudspeaker_frame, text="PLAY FALSE SOUND",
+                                         command=self.onPlayFalseSound)
+        play_false_sound_button.grid(row=1, column=0, sticky=W)
+        stop_button = Button(loudspeaker_frame, text="STOP", command=self.onStop)
+        stop_button.grid(row=2, column=0, sticky=W)
+
         # endregion
 
     def onConfigureTrueSound(self):
@@ -72,6 +80,24 @@ class MyProgram:
 
     def onConfigureFalseSound(self):
         pass
+
+    def onPlayTrueSound(self):
+        for client_id in self.server_thread.loudspeaker_client_list:
+            conn_2 = self.server_thread.connection_dict[client_id]
+            self.server1.send_command(conn_2, 'PLAY TRUE')
+            self.server1.send_message = None
+
+    def onPlayFalseSound(self):
+        for client_id in self.server_thread.loudspeaker_client_list:
+            conn_2 = self.server_thread.connection_dict[client_id]
+            self.server1.send_command(conn_2, 'PLAY FALSE')
+            self.server1.send_message = None
+
+    def onStop(self):
+        for client_id in self.server_thread.loudspeaker_client_list:
+            conn_2 = self.server_thread.connection_dict[client_id]
+            self.server1.send_command(conn_2, 'STOP')
+            self.server1.send_message = None
 
     def thread_record_button(self):
         th_record = threading.Thread(target=self.onRecord, args=[])

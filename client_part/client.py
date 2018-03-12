@@ -124,10 +124,10 @@ class MyClient:
     def receive_sound(self, isTrue):
         if isTrue:
             print('Receive TRUE Sound')
-            file_name = "True.wav"
+            file_name = "True.mp3"
         else:
             print('Receive FALSE Sound')
-            file_name = "False.wav"
+            file_name = "False.mp3"
 
         file = open(file_name, "w+b")
         while True:
@@ -139,16 +139,17 @@ class MyClient:
 
         print("Done")
 
-    def play_true_song(self):
+    def play_true_song(self, loop):
         print("Play True Song")
-        pygame.mixer.music.load("Cat.mp3")
-        pygame.mixer.music.play(2)
+        pygame.mixer.music.load("True.mp3")
+        pygame.mixer.music.play(loop)
 
-    def play_false_song(self):
+    def play_false_song(self, loop):
         print("Play False Song")
-        pygame.mixer.music.load("Laugh.mp3")
-        pygame.mixer.music.play(2)
+        pygame.mixer.music.load("False.mp3")
+        pygame.mixer.music.play(loop)
 
     def stop_song(self):
         print("Stop playing Song")
         pygame.mixer.music.stop()
+
