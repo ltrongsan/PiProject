@@ -3,7 +3,6 @@ import sys
 import numpy
 import time
 import pickle
-from numpy.fft import fft
 
 
 class MyServer:
@@ -31,6 +30,34 @@ class MyServer:
         self.socket.listen(5)
         print('Socket now listening')
 
+    def send_command(self, connection, command):
+        self.send_message = command
+        connection.send(self.send_message.encode())
+        time.sleep(1)
+
+    def send_song(self, connection, isTrue):
+        buffer_size = 2048
+        if isTrue:
+            self.send_command(connection, 'CONFIGURE TRUE')
+        else:
+            self.send_command(connection, 'CONFIGURE FALSE')
+
+        # Send audio file segment
+        print('Sending...')
+        self.file_size = buffer_size
+        data = file.read(buffer_size)
+        self.send_message = data
+        while data:
+            print('Sending...')
+            self.socket.send(self.send_message)
+            data = file.read(buffer_size)
+            self.send_message = data
+            self.file_size += buffer_size
+        print("Done Sending")
+
+    def send_fft_spectral_sum(self, connection):
+        pass
+
     def receive_record_file(self, connection):
         file = open('test.wav', 'wb')
         self.receive_message = connection.recv(self.buffer_size)
@@ -42,11 +69,6 @@ class MyServer:
             self.receive_message = connection.recv(self.buffer_size)
             self.file_size += self.buffer_size
         file.close()
-
-    def send_command(self, connection, command):
-        self.send_message = command
-        connection.send(self.send_message.encode())
-        time.sleep(1)
 
     def receive_fft(self, connection):
         buffer_size = 4096
@@ -62,9 +84,6 @@ class MyServer:
             serialized.extend(self.receive_message)
             rev_size += len(self.receive_message)
         self.fft_result = pickle.loads(serialized)
-
-    def send_fft_spectral_sum(self, connection):
-        pass
 
     def calculate_fft_spectral_sum(self):
         self.fft_result = self.fft_result / max(self.fft_result)

@@ -83,9 +83,6 @@ class MyClient:
                     break
         self.send_message = None
 
-    def receive_fft(self):
-        pass
-
     def receive_command(self):
         self.command = self.socket.recv(2048)
         self.command = self.command.decode()
@@ -107,7 +104,7 @@ class MyClient:
         spectral_sum = numpy.sum(fft_result)
         self.send_message = str(spectral_sum)
 
-    def receive_sound(self, isTrue):
+    def receive_song(self, isTrue):
         if isTrue:
             print('Receive TRUE Sound')
             file_name = "True.mp3"

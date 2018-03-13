@@ -76,10 +76,17 @@ class MyProgram:
         # endregion
 
     def onConfigureTrueSound(self):
-        pass
+        for client_id in self.server_thread.loudspeaker_client_list:
+            conn_2 = self.server_thread.connection_dict[client_id]
+            self.server1.send_song(conn_2, 'TRUE')
+            self.server1.send_message = None
 
     def onConfigureFalseSound(self):
-        pass
+        for client_id in self.server_thread.loudspeaker_client_list:
+            conn_2 = self.server_thread.connection_dict[client_id]
+            self.server1.send_command(conn_2, 'CONFIGURE FALSE')
+            self.server1.send_song(conn_2, 'FALSE')
+            self.server1.send_message = None
 
     def onPlayTrueSound(self):
         for client_id in self.server_thread.loudspeaker_client_list:

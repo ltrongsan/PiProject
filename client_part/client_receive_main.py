@@ -26,6 +26,10 @@ while 1:
         client2.play_true_song(-1)
     elif message == 'PLAY FALSE':
         client2.play_false_song(-1)
+    elif message == 'CONFIGURE TRUE':
+        client2.receive_song(True)
+    elif message == 'CONFIGURE FALSE':
+        client2.receive_song(False)
     else:
         continue
 
