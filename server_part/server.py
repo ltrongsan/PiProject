@@ -41,7 +41,6 @@ class MyServer:
             self.send_command(connection, 'CONFIGURE TRUE')
         else:
             self.send_command(connection, 'CONFIGURE FALSE')
-
         # Send audio file segment
         print('Sending...')
         self.file_size = buffer_size

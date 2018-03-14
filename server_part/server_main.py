@@ -1,8 +1,10 @@
 import socket
 import time
 import threading
+import os
 from tkinter import *
 from tkinter.ttk import *
+from tkinter import filedialog
 from server_part import server
 from server_part import threads
 
@@ -75,7 +77,20 @@ class MyProgram:
 
         # endregion
 
+    def open_file(self):
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        name = filedialog.askopenfilename(initialdir=current_dir,
+                                          filetypes=(("Mp3 Files", "*.mp3"), ("All Files", "*.*")),
+                                          title="Choose a file.")
+        # Using try in case user types in unknown file or closes without choosing a file.
+        try:
+            with open(name, 'r') as UseFile:
+                print(UseFile.read())
+        except:
+            print("No file exists")
+
     def onConfigureTrueSound(self):
+        self.open_file()
         for client_id in self.server_thread.loudspeaker_client_list:
             conn_2 = self.server_thread.connection_dict[client_id]
             self.server1.send_song(conn_2, 'TRUE')

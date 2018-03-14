@@ -1,5 +1,7 @@
 from tkinter import *
 from tkinter.ttk import *
+from tkinter import filedialog
+import os
 
 
 class TestUI(Frame):
@@ -40,8 +42,17 @@ class TestUI(Frame):
         self.close_button.grid(row=3, column=5)
 
     def greet(self):
-        for item in self.client_tree.selection():
-            print(item)
+        test = os.path.dirname(os.path.abspath(__file__))
+        name = filedialog.askopenfilename(initialdir=test,
+                                          filetypes=(("Text File", "*.txt"), ("All Files", "*.*")),
+                                          title="Choose a file.")
+        print(name)
+        # Using try in case user types in unknown file or closes without choosing a file.
+        # try:
+        #     with open(name, 'r') as UseFile:
+        #         print(UseFile.read())
+        # except:
+        #     print("No file exists")
 
 
 if __name__ == "__main__":

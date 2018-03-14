@@ -6,7 +6,6 @@ import pygame
 import pickle
 from scipy.io import wavfile
 from numpy.fft import fft
-import matplotlib.pyplot as plt
 
 
 class MyClient:
