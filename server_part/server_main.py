@@ -24,6 +24,8 @@ class MyProgram:
         self.host = socket.gethostname()
         self.port = 8888
 
+        self.sound_file = None
+
         self.client_tree = Treeview(record_frame)
         self.server1 = server.MyServer(self.host, self.port)
         self.server_thread = threads.ServerThread(self.server1, self.client_tree)
