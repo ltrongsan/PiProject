@@ -104,6 +104,7 @@ class MyClient:
         self.send_message = str(spectral_sum)
 
     def receive_song(self, isTrue):
+        buffer_size = 4096
         if isTrue:
             print('Receive TRUE Sound')
             file_name = "True.mp3"
@@ -112,13 +113,15 @@ class MyClient:
             file_name = "False.mp3"
 
         file = open(file_name, "w+b")
-        while True:
-            data = self.socket.recv(1024)
-            if not data:
-                break
+        data = self.socket.recv(buffer_size)
+
+        while data:
+            print('Receiving sound ...')
             file.write(data)
             print(str(list(data)))
+            data = self.socket.recv(buffer_size)
 
+        file.close()
         print("Done")
 
     def play_true_song(self, loop):

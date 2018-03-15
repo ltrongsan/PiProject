@@ -80,14 +80,13 @@ class MyProgram:
         # endregion
 
     def open_file(self):
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        name = filedialog.askopenfilename(initialdir=current_dir,
-                                          filetypes=(("Mp3 Files", "*.mp3"), ("All Files", "*.*")),
-                                          title="Choose a file.")
-        # Using try in case user types in unknown file or closes without choosing a file.
         try:
-            with open(name, 'r') as UseFile:
-                print(UseFile.read())
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            name = filedialog.askopenfilename(initialdir=current_dir,
+                                              filetypes=(("Mp3 Files", "*.mp3"), ("All Files", "*.*")),
+                                              title="Choose a file.")
+            print(name)
+            self.sound_file = name
         except:
             print("No file exists")
 
@@ -95,14 +94,16 @@ class MyProgram:
         self.open_file()
         for client_id in self.server_thread.loudspeaker_client_list:
             conn_2 = self.server_thread.connection_dict[client_id]
-            self.server1.send_song(conn_2, 'TRUE')
+            self.server1.send_command(conn_2, 'CONFIGURE TRUE')
+            self.server1.send_song(self.sound_file, conn_2, 'TRUE')
             self.server1.send_message = None
 
     def onConfigureFalseSound(self):
+        self.open_file()
         for client_id in self.server_thread.loudspeaker_client_list:
             conn_2 = self.server_thread.connection_dict[client_id]
             self.server1.send_command(conn_2, 'CONFIGURE FALSE')
-            self.server1.send_song(conn_2, 'FALSE')
+            self.server1.send_song(self.sound_file, conn_2, 'FALSE')
             self.server1.send_message = None
 
     def onPlayTrueSound(self):
@@ -171,9 +172,11 @@ class MyProgram:
             listbox.insert(END, message)
 
             for client_id in self.server_thread.loudspeaker_client_list:
-                message = str(self.server1.spectral_sum)
                 conn_2 = self.server_thread.connection_dict[client_id]
-                conn_2.send(message.encode())
+                if self.server1.spectral_sum >= 200:
+                    self.server1.send_command(conn_2, 'TRUE')
+                elif self.server1.spectral_sum < 200:
+                    self.server1.send_command(conn_2, 'FALSE')
 
             time.sleep(8)
 

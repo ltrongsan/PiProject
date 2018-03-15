@@ -35,23 +35,30 @@ class MyServer:
         connection.send(self.send_message.encode())
         time.sleep(1)
 
-    def send_song(self, connection, isTrue):
-        buffer_size = 2048
+    def send_song(self, file_name, connection, isTrue):
+        buffer_size = 4096
         if isTrue:
             self.send_command(connection, 'CONFIGURE TRUE')
         else:
             self.send_command(connection, 'CONFIGURE FALSE')
+
+        file = open(file_name, 'rb')
+
         # Send audio file segment
         print('Sending...')
-        self.file_size = buffer_size
+        self.file_size = 0
         data = file.read(buffer_size)
         self.send_message = data
+
         while data:
             print('Sending...')
-            self.socket.send(self.send_message)
+            connection.send(self.send_message)
             data = file.read(buffer_size)
             self.send_message = data
             self.file_size += buffer_size
+
+        self.send_message = 'DONE'
+        connection.send(self.send_message.encode())
         print("Done Sending")
 
     def send_fft_spectral_sum(self, connection):
@@ -76,12 +83,13 @@ class MyServer:
         obj_size = int(self.receive_message)
         self.receive_message = connection.recv(buffer_size)
         serialized = bytearray(self.receive_message)
-        rev_size = len(self.receive_message)
-        while rev_size < obj_size:
+        recv_size = len(self.receive_message)
+
+        while recv_size < obj_size:
             print("Receiving")
             self.receive_message = connection.recv(buffer_size)
             serialized.extend(self.receive_message)
-            rev_size += len(self.receive_message)
+            recv_size += len(self.receive_message)
         self.fft_result = pickle.loads(serialized)
 
     def calculate_fft_spectral_sum(self):
