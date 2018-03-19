@@ -23,6 +23,7 @@ class MyProgram:
 
         self.host = socket.gethostname()
         self.port = 8888
+        self.threshold = 300
 
         self.sound_file = None
 
@@ -173,9 +174,9 @@ class MyProgram:
 
             for client_id in self.server_thread.loudspeaker_client_list:
                 conn_2 = self.server_thread.connection_dict[client_id]
-                if self.server1.spectral_sum >= 200:
+                if self.server1.spectral_sum >= self.threshold:
                     self.server1.send_command(conn_2, 'TRUE')
-                elif self.server1.spectral_sum < 200:
+                elif self.server1.spectral_sum < self.threshold:
                     self.server1.send_command(conn_2, 'FALSE')
 
             time.sleep(8)

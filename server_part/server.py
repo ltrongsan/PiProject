@@ -58,6 +58,7 @@ class MyServer:
             self.file_size += buffer_size
 
         self.send_message = 'DONE'
+        print(self.send_message.encode())
         connection.send(self.send_message.encode())
         print("Done Sending")
 

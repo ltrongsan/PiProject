@@ -114,8 +114,10 @@ class MyClient:
 
         file = open(file_name, "w+b")
         data = self.socket.recv(buffer_size)
-
-        while data:
+        string = 'DONE'
+        string = string.encode()
+        print(string)
+        while data != string:
             print('Receiving sound ...')
             file.write(data)
             print(str(list(data)))
