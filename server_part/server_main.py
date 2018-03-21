@@ -26,6 +26,7 @@ class MyProgram:
         self.threshold = 300
 
         self.sound_file = None
+        self.win = None
 
         self.client_tree = Treeview(record_frame)
         self.server1 = server.MyServer(self.host, self.port)
@@ -130,8 +131,8 @@ class MyProgram:
         th_record.start()
 
     def onRecord(self):
-        win = Toplevel()         # create child window
-        frame = Frame(win)
+        self.win = Toplevel()         # create child window
+        frame = Frame(self.win)
         frame.pack()
 
         scrollbar = Scrollbar(frame)
@@ -141,7 +142,7 @@ class MyProgram:
         listbox.config(yscrollcommand=scrollbar.set)
         scrollbar.config(command=listbox.yview)
 
-        Button(win, text='Close', command=win.destroy).pack(side=BOTTOM)
+        Button(self.win, text='Close', command=self.onClose).pack(side=BOTTOM)
 
         # create a client list UI
         for item in self.client_tree.selection():
@@ -158,6 +159,9 @@ class MyProgram:
         # attach listbox to scrollbar
         listbox.config(yscrollcommand=scrollbar.set)
         scrollbar.config(command=listbox.yview)
+
+    def onClose(self):
+        self.win.destroy()
 
     def onExit(self):
         pass
