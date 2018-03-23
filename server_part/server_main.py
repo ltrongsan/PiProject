@@ -88,26 +88,29 @@ class MyProgram:
             name = filedialog.askopenfilename(initialdir=current_dir,
                                               filetypes=(("Mp3 Files", "*.mp3"), ("All Files", "*.*")),
                                               title="Choose a file.")
-            print(name)
-            self.sound_file = name
+            if name != '':
+                print(name)
+                self.sound_file = name
         except:
             print("No file exists")
 
     def onConfigureTrueSound(self):
         self.open_file()
-        for client_id in self.server_thread.loudspeaker_client_list:
-            conn_2 = self.server_thread.connection_dict[client_id]
-            self.server1.send_command(conn_2, 'CONFIGURE TRUE')
-            self.server1.send_song(self.sound_file, conn_2, 'TRUE')
-            self.server1.send_message = None
+        if self.sound_file is not None:
+            for client_id in self.server_thread.loudspeaker_client_list:
+                conn_2 = self.server_thread.connection_dict[client_id]
+                self.server1.send_command(conn_2, 'CONFIGURE TRUE')
+                self.server1.send_song(self.sound_file, conn_2, 'TRUE')
+                self.server1.send_message = None
 
     def onConfigureFalseSound(self):
         self.open_file()
-        for client_id in self.server_thread.loudspeaker_client_list:
-            conn_2 = self.server_thread.connection_dict[client_id]
-            self.server1.send_command(conn_2, 'CONFIGURE FALSE')
-            self.server1.send_song(self.sound_file, conn_2, 'FALSE')
-            self.server1.send_message = None
+        if self.sound_file is not None:
+            for client_id in self.server_thread.loudspeaker_client_list:
+                conn_2 = self.server_thread.connection_dict[client_id]
+                self.server1.send_command(conn_2, 'CONFIGURE FALSE')
+                self.server1.send_song(self.sound_file, conn_2, 'FALSE')
+                self.server1.send_message = None
 
     def onPlayTrueSound(self):
         for client_id in self.server_thread.loudspeaker_client_list:
