@@ -27,6 +27,7 @@ class MyProgram:
 
         self.sound_file = None
         self.win = None
+        self.stop_record = False
 
         self.client_tree = Treeview(record_frame)
         self.server1 = server.MyServer(self.host, self.port)
@@ -141,10 +142,8 @@ class MyProgram:
         listbox = Listbox(frame, width=150, yscrollcommand=scrollbar.set)
         listbox.config(yscrollcommand=scrollbar.set)
         scrollbar.config(command=listbox.yview)
+        Button(self.win, text='Close', command=lambda: self.onClose(conn)).pack(side=BOTTOM)
 
-        Button(self.win, text='Close', command=self.onClose).pack(side=BOTTOM)
-
-        # create a client list UI
         for item in self.client_tree.selection():
             client_id = self.client_tree.item(item, 'text')
             conn = self.server_thread.connection_dict[client_id]
@@ -154,20 +153,18 @@ class MyProgram:
             listbox.insert(END, conn)
             listbox.pack(side=LEFT, fill=BOTH)
 
+            self.stop_record = False
             self.record(conn, listbox)
 
-        # attach listbox to scrollbar
-        listbox.config(yscrollcommand=scrollbar.set)
-        scrollbar.config(command=listbox.yview)
-
-    def onClose(self):
+    def onClose(self, conn):
+        self.stop_record = True
         self.win.destroy()
 
     def onExit(self):
         pass
 
     def record(self, conn, listbox):
-        while 1:
+        while not self.stop_record:
             self.server1.send_command(conn, 'RECORD')
             self.server1.receive_fft(conn)
             print(self.server1.fft_result)
@@ -183,7 +180,7 @@ class MyProgram:
                 elif self.server1.spectral_sum < self.threshold:
                     self.server1.send_command(conn_2, 'FALSE')
 
-            time.sleep(8)
+            time.sleep(5)
 
 
 if __name__ == "__main__":
