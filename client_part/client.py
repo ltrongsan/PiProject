@@ -127,14 +127,20 @@ class MyClient:
         print("Done")
 
     def play_true_song(self, loop):
-        print("Play True Song")
-        pygame.mixer.music.load("True.mp3")
-        pygame.mixer.music.play(loop)
+        try:
+            print("Play True Song")
+            pygame.mixer.music.load("True.mp3")
+            pygame.mixer.music.play(loop)
+        except:
+            print('Cannot play. Please configure the sound first')
 
     def play_false_song(self, loop):
-        print("Play False Song")
-        pygame.mixer.music.load("False.mp3")
-        pygame.mixer.music.play(loop)
+        try:
+            print("Play False Song")
+            pygame.mixer.music.load("False.mp3")
+            pygame.mixer.music.play(loop)
+        except:
+            print('Cannot play. Please configure the sound first')
 
     def stop_song(self):
         print("Stop playing Song")
