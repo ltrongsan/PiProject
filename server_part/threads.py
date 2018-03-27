@@ -3,6 +3,9 @@ from server_part import server
 
 
 class ServerThread(Thread):
+    """
+
+    """
     def __init__(self, my_server, client_tree):
         self.client_tree = client_tree
         Thread.__init__(self)
@@ -13,7 +16,7 @@ class ServerThread(Thread):
         self.mic_client_list = []
         self.loudspeaker_client_list = []
 
-        self.threads = []
+        self.threads_list = []
         self.server_client_connection = server.ServerClientConnection(None, None)
         self.connection_dict = {}
 
@@ -43,11 +46,14 @@ class ServerThread(Thread):
                                     values=(self.client_dict[self.threads_id]))
             new_thread.daemon = True
             new_thread.start()
-            self.threads.append(new_thread)
+            self.threads_list.append(new_thread)
             self.threads_id = self.threads_id + 1
 
 
 class ClientThread(Thread):
+    """
+
+    """
     def __init__(self, server, server_client_conn, client_ID):
         Thread.__init__(self)
         self.server = server

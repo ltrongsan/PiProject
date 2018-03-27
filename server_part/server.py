@@ -6,6 +6,9 @@ import pickle
 
 
 class MyServer:
+    """
+
+    """
     def __init__(self, host, port):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)     # create an INET, STREAMing socket
         self.receive_message = None
@@ -31,11 +34,24 @@ class MyServer:
         print('Socket now listening')
 
     def send_command(self, connection, command):
+        """
+
+        :param connection:
+        :param command:
+        :return:
+        """
         self.send_message = command
         connection.send(self.send_message.encode())
         time.sleep(1)
 
     def send_song(self, file_name, connection, isTrue):
+        """
+
+        :param file_name:
+        :param connection:
+        :param isTrue:
+        :return:
+        """
         buffer_size = 4096
         if isTrue:
             self.send_command(connection, 'CONFIGURE TRUE')
@@ -63,9 +79,19 @@ class MyServer:
         print("Done Sending")
 
     def send_fft_spectral_sum(self, connection):
+        """
+
+        :param connection:
+        :return:
+        """
         pass
 
     def receive_record_file(self, connection):
+        """
+
+        :param connection:
+        :return:
+        """
         file = open('test.wav', 'wb')
         self.receive_message = connection.recv(self.buffer_size)
         file.write(self.receive_message)
@@ -78,6 +104,11 @@ class MyServer:
         file.close()
 
     def receive_fft(self, connection):
+        """
+
+        :param connection:
+        :return:
+        """
         buffer_size = 4096
         self.send_command(connection, "GET FFT")
         self.receive_message = connection.recv(buffer_size)
@@ -94,6 +125,10 @@ class MyServer:
         self.fft_result = pickle.loads(serialized)
 
     def calculate_fft_spectral_sum(self):
+        """
+
+        :return:
+        """
         self.fft_result = self.fft_result / max(self.fft_result)
         self.spectral_sum = numpy.sum(self.fft_result)
 

@@ -12,13 +12,14 @@ from server_part import threads
 class MyProgram:
     def __init__(self, master):
 
-        record_frame = Frame(master)
+        self.master = master
+        record_frame = Frame(self.master)
         record_frame.grid(row=0, column=0)
-        camera_frame = Frame(master)
+        camera_frame = Frame(self.master)
         camera_frame.grid(row=0, column=1)
-        configuration_frame = Frame(master)
+        configuration_frame = Frame(self.master)
         configuration_frame.grid(row=1, column=0)
-        loudspeaker_frame = Frame(master)
+        loudspeaker_frame = Frame(self.master)
         loudspeaker_frame.grid(row=1, column=1)
 
         self.host = socket.gethostname()
@@ -38,7 +39,7 @@ class MyProgram:
 
         subtitle_text = StringVar()
         subtitle_text.set("MAIN PROGRAM")
-        subtitle = Label(master, textvariable=subtitle_text)
+        subtitle = Label(self.master, textvariable=subtitle_text)
         subtitle.grid(row=0, sticky=N)
 
         self.client_tree['columns'] = ('ip', 'port', 'status')
@@ -164,7 +165,10 @@ class MyProgram:
         self.win.destroy()
 
     def onExit(self):
-        pass
+        for t in self.server_thread.threads_list:
+            t.join()
+        print('Exiting')
+        self.master.destroy()
 
     def record(self, conn, listbox):
         while not self.stop_record:

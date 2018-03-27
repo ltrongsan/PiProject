@@ -9,6 +9,9 @@ from numpy.fft import fft
 
 
 class MyClient:
+    """
+
+    """
     def __init__(self, host, port, type):
         self.client_IP = socket.gethostname()
         self.send_message = None
@@ -32,6 +35,13 @@ class MyClient:
             sys.exit()
 
     def send_record_file(self, file, buffer_size, command):
+        """
+
+        :param file:
+        :param buffer_size:
+        :param command:
+        :return:
+        """
         # Send command message (ex. 'SEND')
         self.send_message = command.encode()
         self.socket.send(self.send_message)
@@ -50,6 +60,10 @@ class MyClient:
         print("Done Sending")
 
     def send_fft(self):
+        """
+
+        :return:
+        """
         buffer_size = 4096
         packet_number = 0
         sent_size = 0
@@ -83,10 +97,19 @@ class MyClient:
         self.send_message = None
 
     def receive_command(self):
+        """
+
+        :return:
+        """
         self.command = self.socket.recv(2048)
         self.command = self.command.decode()
 
     def fourier_transform(self, input_data):
+        """
+
+        :param input_data:
+        :return:
+        """
         input_data = input_data / (2. ** 15)  # Convert sound data with 16 Bit
         self.fft = fft(input_data)
         fft_length = int(len(self.fft) / 2)  # Take only half of the FFT
@@ -104,6 +127,11 @@ class MyClient:
         self.send_message = str(spectral_sum)
 
     def receive_song(self, isTrue):
+        """
+
+        :param isTrue:
+        :return:
+        """
         buffer_size = 4096
         if isTrue:
             print('Receive TRUE Sound')
@@ -127,6 +155,11 @@ class MyClient:
         print("Done")
 
     def play_true_song(self, loop):
+        """
+
+        :param loop:
+        :return:
+        """
         try:
             print("Play True Song")
             pygame.mixer.music.load("True.mp3")
@@ -135,6 +168,11 @@ class MyClient:
             print('Cannot play. Please configure the sound first')
 
     def play_false_song(self, loop):
+        """
+
+        :param loop:
+        :return:
+        """
         try:
             print("Play False Song")
             pygame.mixer.music.load("False.mp3")
@@ -143,6 +181,10 @@ class MyClient:
             print('Cannot play. Please configure the sound first')
 
     def stop_song(self):
+        """
+
+        :return:
+        """
         print("Stop playing Song")
         pygame.mixer.music.stop()
 
