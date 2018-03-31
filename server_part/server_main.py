@@ -28,7 +28,7 @@ class MyProgram:
 
         self.sound_file = None
         self.win = None
-        self.stop_record = False
+        self.close_record = threading.Event()
 
         self.client_tree = Treeview(record_frame)
         self.server1 = server.MyServer(self.host, self.port)
@@ -60,7 +60,7 @@ class MyProgram:
 
         # region Create Buttons
 
-        record_button = Button(configuration_frame, text="RECORD", command=self.thread_record_button)
+        record_button = Button(configuration_frame, text="RECORD", command=self.click_record_button)
         record_button.grid(row=1, column=0)
         close_button = Button(configuration_frame, text="CLOSE", command=self.onExit)
         close_button.grid(row=2, column=0)
@@ -131,11 +131,12 @@ class MyProgram:
             self.server1.send_command(conn_2, 'STOP')
             self.server1.send_message = None
 
-    def thread_record_button(self):
-        th_record = threading.Thread(target=self.onRecord, args=[])
-        th_record.start()
+    def click_record_button(self):
+        thread_record = threading.Thread(target=self.onRecord, args=[])
+        thread_record.start()
 
-    def onRecord(self):
+    def onRecord(self, ):
+        self.close_record.clear()
         self.win = Toplevel()         # create child window
         frame = Frame(self.win)
         frame.pack()
@@ -156,12 +157,10 @@ class MyProgram:
             print(conn)
             listbox.insert(END, conn)
             listbox.pack(side=LEFT, fill=BOTH)
-
-            self.stop_record = False
             self.record(conn, listbox)
 
     def onClose(self, conn):
-        self.stop_record = True
+        self.close_record.set()
         self.win.destroy()
 
     def onExit(self):
@@ -171,14 +170,18 @@ class MyProgram:
         self.master.destroy()
 
     def record(self, conn, listbox):
-        while not self.stop_record:
+        while not self.close_record.is_set():
             self.server1.send_command(conn, 'RECORD')
-            self.server1.receive_fft(conn)
+            try:
+                self.server1.receive_fft(conn)
+            except:
+                self.server1.send_command(conn, 'RECORD')
             print(self.server1.fft_result)
             self.server1.calculate_fft_spectral_sum()
             self.server1.spectral_sum = float(self.server1.spectral_sum)
             message = 'The sum of FFT is : {0:.3f}'.format(self.server1.spectral_sum)
-            listbox.insert(END, message)
+            if not self.close_record.is_set():
+                listbox.insert(END, message)
 
             for client_id in self.server_thread.loudspeaker_client_list:
                 conn_2 = self.server_thread.connection_dict[client_id]

@@ -4,14 +4,14 @@ from client_part import client
 import RecordAudio
 
 
-isNotConnection = True
+isConnection = False
 host = socket.gethostname()
 port = 8888
-while isNotConnection:
+while not isConnection:
     try:
         client1 = client.MyClient(host, port, 'MICROPHONE')
         print('Connection Established')
-        isNotConnection = False
+        isConnection = True
         while 1:
             client1.receive_message = client1.socket.recv(1024)
             if client1.receive_message.decode() == 'RECORD':
@@ -24,6 +24,6 @@ while isNotConnection:
                 print("FFT was sent successfully")
     except:
         print('CANNOT CONNECT TO SERVER')
-        isNotConnection = True
+        isConnection = False
         time.sleep(5)
 
