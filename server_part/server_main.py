@@ -42,15 +42,15 @@ class MyProgram:
         subtitle = Label(self.master, textvariable=subtitle_text)
         subtitle.grid(row=0, sticky=N)
 
-        self.client_tree['columns'] = ('ip', 'port', 'status')
+        self.client_tree['columns'] = ('ip', 'port', 'device')
         self.client_tree.heading("#0", text='No.')
         self.client_tree.column("#0", anchor='center', width=30)
         self.client_tree.heading('ip', text='IP address')
         self.client_tree.column('ip', anchor='center', width=200)
         self.client_tree.heading('port', text='Port')
         self.client_tree.column('port', anchor='center', width=70)
-        self.client_tree.heading('status', text='Status')
-        self.client_tree.column('status', anchor='center', width=100)
+        self.client_tree.heading('device', text='Device')
+        self.client_tree.column('device', anchor='center', width=100)
 
         for client_address in self.server_thread.client_dict.keys():
             self.client_tree.insert("", "end", text=client_address,
@@ -66,19 +66,19 @@ class MyProgram:
         close_button.grid(row=2, column=0)
 
         configure_true_sound_button = Button(configuration_frame, text="CONFIGURE TRUE SOUND",
-                                             command=self.onConfigureTrueSound)
+                                             command=self.ConfigureTrueSound)
         configure_true_sound_button.grid(row=1, column=2, sticky=W)
         configure_false_sound_button = Button(configuration_frame, text="CONFIGURE FALSE SOUND",
-                                              command=self.onConfigureFalseSound)
+                                              command=self.ConfigureFalseSound)
         configure_false_sound_button.grid(row=2, column=2, sticky=W)
 
         play_true_sound_button = Button(loudspeaker_frame, text="PLAY TRUE SOUND",
-                                        command=self.onPlayTrueSound)
+                                        command=self.PlayTrueSound)
         play_true_sound_button.grid(row=0, column=0, sticky=W)
         play_false_sound_button = Button(loudspeaker_frame, text="PLAY FALSE SOUND",
-                                         command=self.onPlayFalseSound)
+                                         command=self.PlayFalseSound)
         play_false_sound_button.grid(row=1, column=0, sticky=W)
-        stop_button = Button(loudspeaker_frame, text="STOP", command=self.onStop)
+        stop_button = Button(loudspeaker_frame, text="STOP", command=self.Stop)
         stop_button.grid(row=2, column=0, sticky=W)
 
         # endregion
@@ -95,16 +95,18 @@ class MyProgram:
         except:
             print("No file exists")
 
-    def onConfigureTrueSound(self):
+    def ConfigureTrueSound(self):
         self.open_file()
         if self.sound_file is not None:
+            self.show_wait_window()
             for client_id in self.server_thread.loudspeaker_client_list:
                 conn_2 = self.server_thread.connection_dict[client_id]
                 self.server1.send_command(conn_2, 'CONFIGURE TRUE')
                 self.server1.send_song(self.sound_file, conn_2, 'TRUE')
                 self.server1.send_message = None
+            self.close_wait_window()
 
-    def onConfigureFalseSound(self):
+    def ConfigureFalseSound(self):
         self.open_file()
         if self.sound_file is not None:
             for client_id in self.server_thread.loudspeaker_client_list:
@@ -113,19 +115,19 @@ class MyProgram:
                 self.server1.send_song(self.sound_file, conn_2, 'FALSE')
                 self.server1.send_message = None
 
-    def onPlayTrueSound(self):
+    def PlayTrueSound(self):
         for client_id in self.server_thread.loudspeaker_client_list:
             conn_2 = self.server_thread.connection_dict[client_id]
             self.server1.send_command(conn_2, 'PLAY TRUE')
             self.server1.send_message = None
 
-    def onPlayFalseSound(self):
+    def PlayFalseSound(self):
         for client_id in self.server_thread.loudspeaker_client_list:
             conn_2 = self.server_thread.connection_dict[client_id]
             self.server1.send_command(conn_2, 'PLAY FALSE')
             self.server1.send_message = None
 
-    def onStop(self):
+    def Stop(self):
         for client_id in self.server_thread.loudspeaker_client_list:
             conn_2 = self.server_thread.connection_dict[client_id]
             self.server1.send_command(conn_2, 'STOP')
@@ -137,6 +139,8 @@ class MyProgram:
 
     def onRecord(self, ):
         self.close_record.clear()
+
+        # region Create UI
         self.win = Toplevel()         # create child window
         frame = Frame(self.win)
         frame.pack()
@@ -148,6 +152,7 @@ class MyProgram:
         listbox.config(yscrollcommand=scrollbar.set)
         scrollbar.config(command=listbox.yview)
         Button(self.win, text='Close', command=lambda: self.onClose(conn)).pack(side=BOTTOM)
+        # endregion
 
         for item in self.client_tree.selection():
             client_id = self.client_tree.item(item, 'text')
@@ -191,6 +196,12 @@ class MyProgram:
                     self.server1.send_command(conn_2, 'FALSE')
 
             time.sleep(5)
+
+    def show_wait_window(self):
+        pass
+
+    def close_wait_window(self):
+        pass
 
 
 if __name__ == "__main__":
