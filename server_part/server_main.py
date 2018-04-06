@@ -29,7 +29,7 @@ class MyProgram:
         self.sound_file = None
         self.record_win = None
         self.waiting_win = None
-        self.close_record = threading.Event()
+        self.isClosed = False
 
         self.client_tree = Treeview(record_frame)
         self.server1 = server.MyServer(self.host, self.port)
@@ -97,26 +97,32 @@ class MyProgram:
             print("No file exists")
 
     def configure_true_sound(self):
+        self.stop_playing()
+        self.show_waiting_window()
         self.open_file()
         if self.sound_file is not None:
-            self.show_waiting_window()
+            self.master.withdraw()
             for client_id in self.server_thread.loudspeaker_client_list:
                 conn_2 = self.server_thread.connection_dict[client_id]
                 self.server1.send_command(conn_2, 'CONFIGURE TRUE')
                 self.server1.send_song(self.sound_file, conn_2, 'TRUE')
                 self.server1.send_message = None
-            self.close_waiting_window()
+            time.sleep(1)
+            self.master.deiconify()
+        self.close_waiting_window()
 
     def configure_false_sound(self):
+        self.stop_playing()
+        self.show_waiting_window()
         self.open_file()
         if self.sound_file is not None:
-            self.show_waiting_window()
             for client_id in self.server_thread.loudspeaker_client_list:
                 conn_2 = self.server_thread.connection_dict[client_id]
                 self.server1.send_command(conn_2, 'CONFIGURE FALSE')
                 self.server1.send_song(self.sound_file, conn_2, 'FALSE')
                 self.server1.send_message = None
-            self.close_waiting_window()
+
+        self.close_waiting_window()
 
     def play_true_sound(self):
         for client_id in self.server_thread.loudspeaker_client_list:
@@ -141,7 +147,7 @@ class MyProgram:
         thread_record.start()
 
     def onRecord(self, ):
-        self.close_record.clear()
+        self.isClosed = False
 
         # region Create UI
         self.record_win = Toplevel()         # create child window
@@ -168,7 +174,7 @@ class MyProgram:
             self.record(conn, listbox)
 
     def close_record_window(self, conn):
-        self.close_record.set()
+        self.isClosed = True
         self.record_win.destroy()
 
     def quit(self):
@@ -178,7 +184,7 @@ class MyProgram:
         self.master.destroy()
 
     def record(self, conn, listbox):
-        while not self.close_record.is_set():
+        while not self.isClosed:
             self.server1.send_command(conn, 'RECORD')
             try:
                 self.server1.receive_fft(conn)
@@ -188,7 +194,7 @@ class MyProgram:
             self.server1.calculate_fft_spectral_sum()
             self.server1.spectral_sum = float(self.server1.spectral_sum)
             message = 'The sum of FFT is : {0:.3f}'.format(self.server1.spectral_sum)
-            if not self.close_record.is_set():
+            if not self.isClosed:
                 listbox.insert(END, message)
 
             for client_id in self.server_thread.loudspeaker_client_list:
@@ -203,11 +209,13 @@ class MyProgram:
     def show_waiting_window(self):
         self.waiting_win = Toplevel()
         self.waiting_win.title('Loading')
-        msg = Message(self.waiting_win, text="LOADING...")
+        self.waiting_win.geometry('200x30')
+        self.waiting_win.grab_set()
+        msg = Message(self.waiting_win, text="PLEASE WAIT", width=100)
         msg.pack()
 
     def close_waiting_window(self):
-        pass
+        self.waiting_win.destroy()
 
 
 if __name__ == "__main__":
