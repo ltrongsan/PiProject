@@ -126,14 +126,14 @@ class MyClient:
         spectral_sum = numpy.sum(fft_result)
         self.send_message = str(spectral_sum)
 
-    def receive_song(self, isTrue):
+    def receive_song(self, isTrueSong):
         """
 
         :param isTrue:
         :return:
         """
         buffer_size = 4096
-        if isTrue:
+        if isTrueSong:
             print('Receive TRUE Sound')
             file_name = "True.mp3"
         else:

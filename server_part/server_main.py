@@ -116,12 +116,14 @@ class MyProgram:
         self.show_waiting_window()
         self.open_file()
         if self.sound_file is not None:
+            self.master.withdraw()
             for client_id in self.server_thread.loudspeaker_client_list:
                 conn_2 = self.server_thread.connection_dict[client_id]
                 self.server1.send_command(conn_2, 'CONFIGURE FALSE')
                 self.server1.send_song(self.sound_file, conn_2, 'FALSE')
                 self.server1.send_message = None
-
+            time.sleep(1)
+            self.master.deiconify()
         self.close_waiting_window()
 
     def play_true_sound(self):
@@ -210,12 +212,14 @@ class MyProgram:
         self.waiting_win = Toplevel()
         self.waiting_win.title('Loading')
         self.waiting_win.geometry('200x30')
-        self.waiting_win.grab_set()
         msg = Message(self.waiting_win, text="PLEASE WAIT", width=100)
         msg.pack()
 
     def close_waiting_window(self):
         self.waiting_win.destroy()
+
+    def check_loudspeaker_list(self):
+        pass
 
 
 if __name__ == "__main__":
