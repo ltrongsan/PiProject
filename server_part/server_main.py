@@ -85,8 +85,9 @@ class MyProgram:
         self.server1.client_tree.bind("<Button-1>", self.select_client)
 
     def select_client(self, event):
-        if self.server1.client_tree.selection():
-            if self.server1.client_tree.selection()[3] == 'MICROPHONE':
+        item = self.server1.client_tree.selection()
+        if len(item) != 0:
+            if item[3] == 'MICROPHONE':
                 self.record_button.config(state=NORMAL)
             else:
                 self.record_button.config(state=DISABLED)
