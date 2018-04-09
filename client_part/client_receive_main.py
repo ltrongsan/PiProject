@@ -34,10 +34,9 @@ while isNotConnection:
                 client2.receive_song(False)
             else:
                 continue
-    except Exception as e:
+    except:
         isNotConnection = True
         print('CANNOT CONNECT TO SERVER')
-        print(e)
         time.sleep(5)
 
 

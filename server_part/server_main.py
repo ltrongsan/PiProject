@@ -32,7 +32,6 @@ class MyProgram:
 
         self.server1 = server.MyServer(self.host, self.port)
         self.server1.client_tree = Treeview(record_frame)
-        # self.server1 = threads.ServerThread(self.server1, self.server1.client_tree)
         self.server1.start()
 
         # region Create Table of Clients
@@ -60,7 +59,8 @@ class MyProgram:
 
         # region Create Buttons
 
-        record_button = Button(configuration_frame, text="RECORD", command=self.click_record_button)
+        record_button = Button(configuration_frame, text="RECORD",
+                               state=DISABLED, command=self.click_record_button)
         record_button.grid(row=1, column=0)
         close_button = Button(configuration_frame, text="CLOSE", command=self.quit)
         close_button.grid(row=2, column=0)
