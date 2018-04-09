@@ -23,7 +23,7 @@ while not isConnection:
                 client1.send_fft()
                 print("FFT was sent successfully")
     except:
-        print('CANNOT CONNECT TO SERVER')
         isConnection = False
+        print('CANNOT CONNECT TO SERVER')
         time.sleep(5)
 

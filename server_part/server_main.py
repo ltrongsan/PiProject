@@ -6,7 +6,6 @@ from tkinter import *
 from tkinter.ttk import *
 from tkinter import filedialog
 from server_part import server
-from server_part import threads
 
 
 class MyProgram:
@@ -31,10 +30,10 @@ class MyProgram:
         self.waiting_win = None
         self.isClosed = False
 
-        self.client_tree = Treeview(record_frame)
         self.server1 = server.MyServer(self.host, self.port)
-        self.server_thread = threads.ServerThread(self.server1, self.client_tree)
-        self.server_thread.start()
+        self.server1.client_tree = Treeview(record_frame)
+        # self.server1 = threads.ServerThread(self.server1, self.server1.client_tree)
+        self.server1.start()
 
         # region Create Table of Clients
 
@@ -43,20 +42,20 @@ class MyProgram:
         subtitle = Label(self.master, textvariable=subtitle_text)
         subtitle.grid(row=0, sticky=N)
 
-        self.client_tree['columns'] = ('ip', 'port', 'device')
-        self.client_tree.heading("#0", text='No.')
-        self.client_tree.column("#0", anchor='center', width=30)
-        self.client_tree.heading('ip', text='IP address')
-        self.client_tree.column('ip', anchor='center', width=200)
-        self.client_tree.heading('port', text='Port')
-        self.client_tree.column('port', anchor='center', width=70)
-        self.client_tree.heading('device', text='Device')
-        self.client_tree.column('device', anchor='center', width=100)
+        self.server1.client_tree['columns'] = ('ip', 'port', 'device')
+        self.server1.client_tree.heading("#0", text='No.')
+        self.server1.client_tree.column("#0", anchor='center', width=30)
+        self.server1.client_tree.heading('ip', text='IP address')
+        self.server1.client_tree.column('ip', anchor='center', width=200)
+        self.server1.client_tree.heading('port', text='Port')
+        self.server1.client_tree.column('port', anchor='center', width=70)
+        self.server1.client_tree.heading('device', text='Device')
+        self.server1.client_tree.column('device', anchor='center', width=100)
 
-        for client_address in self.server_thread.client_dict.keys():
-            self.client_tree.insert("", "end", text=client_address,
-                                    values=(self.server_thread.client_dict[client_address]))
-        self.client_tree.grid(row=1, column=1)
+        for client_address in self.server1.client_dict.keys():
+            self.server1.client_tree.insert("", "end", text=client_address,
+                                            values=(self.server1.client_dict[client_address]))
+        self.server1.client_tree.grid(row=1, column=1)
         # endregion
 
         # region Create Buttons
@@ -102,14 +101,15 @@ class MyProgram:
         self.open_file()
         if self.sound_file is not None:
             self.master.withdraw()
-            for client_id in self.server_thread.loudspeaker_client_list:
-                conn_2 = self.server_thread.connection_dict[client_id]
+            for client_id in self.server1.loudspeaker_client_list:
+                conn_2 = self.server1.connection_dict[client_id]
                 self.server1.send_command(conn_2, 'CONFIGURE TRUE')
                 self.server1.send_song(self.sound_file, conn_2, 'TRUE')
                 self.server1.send_message = None
             time.sleep(1)
             self.master.deiconify()
         self.close_waiting_window()
+        self.sound_file = None
 
     def configure_false_sound(self):
         self.stop_playing()
@@ -117,30 +117,31 @@ class MyProgram:
         self.open_file()
         if self.sound_file is not None:
             self.master.withdraw()
-            for client_id in self.server_thread.loudspeaker_client_list:
-                conn_2 = self.server_thread.connection_dict[client_id]
+            for client_id in self.server1.loudspeaker_client_list:
+                conn_2 = self.server1.connection_dict[client_id]
                 self.server1.send_command(conn_2, 'CONFIGURE FALSE')
                 self.server1.send_song(self.sound_file, conn_2, 'FALSE')
                 self.server1.send_message = None
             time.sleep(1)
             self.master.deiconify()
         self.close_waiting_window()
+        self.sound_file = None
 
     def play_true_sound(self):
-        for client_id in self.server_thread.loudspeaker_client_list:
-            conn_2 = self.server_thread.connection_dict[client_id]
+        for client_id in self.server1.loudspeaker_client_list:
+            conn_2 = self.server1.connection_dict[client_id]
             self.server1.send_command(conn_2, 'PLAY TRUE')
             self.server1.send_message = None
 
     def play_false_sound(self):
-        for client_id in self.server_thread.loudspeaker_client_list:
-            conn_2 = self.server_thread.connection_dict[client_id]
+        for client_id in self.server1.loudspeaker_client_list:
+            conn_2 = self.server1.connection_dict[client_id]
             self.server1.send_command(conn_2, 'PLAY FALSE')
             self.server1.send_message = None
 
     def stop_playing(self):
-        for client_id in self.server_thread.loudspeaker_client_list:
-            conn_2 = self.server_thread.connection_dict[client_id]
+        for client_id in self.server1.loudspeaker_client_list:
+            conn_2 = self.server1.connection_dict[client_id]
             self.server1.send_command(conn_2, 'STOP')
             self.server1.send_message = None
 
@@ -165,9 +166,9 @@ class MyProgram:
         Button(self.record_win, text='Close', command=lambda: self.close_record_window(conn)).pack(side=BOTTOM)
         # endregion
 
-        for item in self.client_tree.selection():
-            client_id = self.client_tree.item(item, 'text')
-            conn = self.server_thread.connection_dict[client_id]
+        for item in self.server1.client_tree.selection():
+            client_id = self.server1.client_tree.item(item, 'text')
+            conn = self.server1.connection_dict[client_id]
             print(client_id)
             listbox.insert(END, client_id)
             print(conn)
@@ -180,7 +181,7 @@ class MyProgram:
         self.record_win.destroy()
 
     def quit(self):
-        for t in self.server_thread.threads_list:
+        for t in self.server1.thread_list:
             t.join()
         print('Exiting')
         self.master.destroy()
@@ -199,8 +200,8 @@ class MyProgram:
             if not self.isClosed:
                 listbox.insert(END, message)
 
-            for client_id in self.server_thread.loudspeaker_client_list:
-                conn_2 = self.server_thread.connection_dict[client_id]
+            for client_id in self.server1.loudspeaker_client_list:
+                conn_2 = self.server1.connection_dict[client_id]
                 if self.server1.spectral_sum >= self.threshold:
                     self.server1.send_command(conn_2, 'TRUE')
                 elif self.server1.spectral_sum < self.threshold:

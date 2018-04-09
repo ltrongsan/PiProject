@@ -1,8 +1,5 @@
 import socket
-import time
-import threading
 from server_part import server
-from server_part import threads
 
 
 host = socket.gethostname()

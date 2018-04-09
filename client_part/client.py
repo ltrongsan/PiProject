@@ -129,16 +129,16 @@ class MyClient:
     def receive_song(self, isTrueSong):
         """
 
-        :param isTrue:
+        :param isTrueSong:
         :return:
         """
         buffer_size = 4096
         if isTrueSong:
             print('Receive TRUE Sound')
-            file_name = "True.mp3"
+            file_name = "True Sound.mp3"
         else:
             print('Receive FALSE Sound')
-            file_name = "False.mp3"
+            file_name = "False Sound.mp3"
 
         file = open(file_name, "w+b")
         data = self.socket.recv(buffer_size)
@@ -161,8 +161,8 @@ class MyClient:
         :return:
         """
         try:
-            print("Play True Song")
-            pygame.mixer.music.load("True.mp3")
+            print("Play True Sound")
+            pygame.mixer.music.load("True Sound.mp3")
             pygame.mixer.music.play(loop)
         except:
             print('Cannot play. Please configure the sound first')
@@ -174,8 +174,8 @@ class MyClient:
         :return:
         """
         try:
-            print("Play False Song")
-            pygame.mixer.music.load("False.mp3")
+            print("Play False Sound")
+            pygame.mixer.music.load("False Sound.mp3")
             pygame.mixer.music.play(loop)
         except:
             print('Cannot play. Please configure the sound first')
@@ -185,6 +185,6 @@ class MyClient:
 
         :return:
         """
-        print("Stop playing Song")
+        print("Stop playing Sound")
         pygame.mixer.music.stop()
 
