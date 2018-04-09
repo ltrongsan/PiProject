@@ -59,9 +59,9 @@ class MyProgram:
 
         # region Create Buttons
 
-        record_button = Button(configuration_frame, text="RECORD",
-                               state=DISABLED, command=self.click_record_button)
-        record_button.grid(row=1, column=0)
+        self.record_button = Button(configuration_frame, text="RECORD",
+                                    state=DISABLED, command=self.click_record_button)
+        self.record_button.grid(row=1, column=0)
         close_button = Button(configuration_frame, text="CLOSE", command=self.quit)
         close_button.grid(row=2, column=0)
 
@@ -80,8 +80,16 @@ class MyProgram:
         play_false_sound_button.grid(row=1, column=0, sticky=W)
         stop_button = Button(loudspeaker_frame, text="STOP", command=self.stop_playing)
         stop_button.grid(row=2, column=0, sticky=W)
-
         # endregion
+
+        self.server1.client_tree.bind("<Button-1>", self.select_client)
+
+    def select_client(self, event):
+        if self.server1.client_tree.selection():
+            if self.server1.client_tree.selection()[3] == 'MICROPHONE':
+                self.record_button.config(state=NORMAL)
+            else:
+                self.record_button.config(state=DISABLED)
 
     def open_file(self):
         try:
