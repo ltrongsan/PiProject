@@ -80,14 +80,22 @@ class MyProgram:
         play_false_sound_button.grid(row=1, column=0, sticky=W)
         stop_button = Button(loudspeaker_frame, text="STOP", command=self.stop_playing)
         stop_button.grid(row=2, column=0, sticky=W)
+
+        camera_start_button = Button(camera_frame, text='START CAMERA', command=self.start_camera)
+        camera_start_button.grid(row=1, column=1, sticky=W)
+
+        camera_stop_button = Button(camera_frame, text='STOP CAMERA', command=self.stop_camera)
+        camera_stop_button.grid(row=2, column=1, sticky=W)
         # endregion
 
-        self.server1.client_tree.bind("<Button-1>", self.select_client)
+        self.server1.client_tree.bind('<ButtonRelease-1>', self.select_client)
 
     def select_client(self, event):
-        item = self.server1.client_tree.selection()
-        if len(item) != 0:
-            if item[3] == 'MICROPHONE':
+        selected_item_id = self.server1.client_tree.selection()
+        if len(selected_item_id) != 0:
+            selected_item = self.server1.client_tree.item(selected_item_id)
+            selected_item_type = selected_item['values'][2]
+            if selected_item_type == 'MICROPHONE':
                 self.record_button.config(state=NORMAL)
             else:
                 self.record_button.config(state=DISABLED)
@@ -101,8 +109,8 @@ class MyProgram:
             if name != '':
                 print(name)
                 self.sound_file = name
-        except:
-            print("No file exists")
+        except IOError as e:
+            print(e)
 
     def configure_true_sound(self):
         self.stop_playing()
@@ -229,6 +237,12 @@ class MyProgram:
         self.waiting_win.destroy()
 
     def check_loudspeaker_list(self):
+        pass
+
+    def start_camera(self):
+        pass
+
+    def stop_camera(self):
         pass
 
 
