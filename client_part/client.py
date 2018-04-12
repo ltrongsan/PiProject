@@ -4,6 +4,7 @@ import numpy
 import time
 import pygame
 import pickle
+import cv2
 from scipy.io import wavfile
 from numpy.fft import fft
 
@@ -187,4 +188,18 @@ class MyClient:
         """
         print("Stop playing Sound")
         pygame.mixer.music.stop()
+
+    def show_webcam(self, mirror=False):
+        cam = cv2.VideoCapture(0)
+        while True:
+            ret_val, img = cam.read()
+            if mirror:
+                img = cv2.flip(img, 1)
+            cv2.imshow('my webcam', img)
+            if cv2.waitKey(1) == 27:
+                break  # esc to quit
+        cv2.destroyAllWindows()
+
+    def send_image(self):
+        pass
 

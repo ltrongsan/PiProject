@@ -9,18 +9,18 @@ host = socket.gethostname()
 port = 8888
 while not isConnection:
     try:
-        client1 = client.MyClient(host, port, 'MICROPHONE')
+        microphone_client = client.MyClient(host, port, 'MICROPHONE')
         print('Connection Established')
         isConnection = True
         while 1:
-            client1.receive_message = client1.socket.recv(1024)
-            if client1.receive_message.decode() == 'RECORD':
+            microphone_client.receive_message = microphone_client.socket.recv(1024)
+            if microphone_client.receive_message.decode() == 'RECORD':
                 # Start recording
                 RecordAudio.record_audio()
                 time.sleep(3)
 
                 # Send FFT sum
-                client1.send_fft()
+                microphone_client.send_fft()
                 print("FFT was sent successfully")
     except:
         isConnection = False

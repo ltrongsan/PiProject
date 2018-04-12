@@ -10,28 +10,28 @@ port = 8888
 pygame.mixer.init()
 while isNotConnection:
     try:
-        client2 = client.MyClient(host, port, 'LOUDSPEAKER')
+        loudspeaker_client = client.MyClient(host, port, 'LOUDSPEAKER')
         print('Connection Established')
         isNotConnection = False
         while 1:
             # Receive and print out the sum of FFT spectral
-            client2.receive_message = client2.socket.recv(1024)
-            message = client2.receive_message.decode()
+            loudspeaker_client.receive_message = loudspeaker_client.socket.recv(1024)
+            message = loudspeaker_client.receive_message.decode()
             print(message)
             if message == 'TRUE':
-                client2.play_true_song(2)
+                loudspeaker_client.play_true_song(2)
             elif message == 'FALSE':
-                client2.play_false_song(2)
+                loudspeaker_client.play_false_song(2)
             elif message == 'STOP':
-                client2.stop_song()
+                loudspeaker_client.stop_song()
             elif message == 'PLAY TRUE':
-                client2.play_true_song(-1)
+                loudspeaker_client.play_true_song(-1)
             elif message == 'PLAY FALSE':
-                client2.play_false_song(-1)
+                loudspeaker_client.play_false_song(-1)
             elif message == 'CONFIGURE TRUE':
-                client2.receive_song(True)
+                loudspeaker_client.receive_song(True)
             elif message == 'CONFIGURE FALSE':
-                client2.receive_song(False)
+                loudspeaker_client.receive_song(False)
             else:
                 continue
     except:

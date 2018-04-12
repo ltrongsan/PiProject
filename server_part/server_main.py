@@ -81,11 +81,13 @@ class MyProgram:
         stop_button = Button(loudspeaker_frame, text="STOP", command=self.stop_playing)
         stop_button.grid(row=2, column=0, sticky=W)
 
-        camera_start_button = Button(camera_frame, text='START CAMERA', command=self.start_camera)
-        camera_start_button.grid(row=1, column=1, sticky=W)
+        self.camera_start_button = Button(camera_frame, text='START CAMERA',
+                                          state=DISABLED, command=self.start_camera)
+        self.camera_start_button.grid(row=1, column=1, sticky=W)
 
-        camera_stop_button = Button(camera_frame, text='STOP CAMERA', command=self.stop_camera)
-        camera_stop_button.grid(row=2, column=1, sticky=W)
+        self.camera_stop_button = Button(camera_frame, text='STOP CAMERA',
+                                         state=DISABLED, command=self.stop_camera)
+        self.camera_stop_button.grid(row=2, column=1, sticky=W)
         # endregion
 
         self.server1.client_tree.bind('<ButtonRelease-1>', self.select_client)
@@ -97,8 +99,11 @@ class MyProgram:
             selected_item_type = selected_item['values'][2]
             if selected_item_type == 'MICROPHONE':
                 self.record_button.config(state=NORMAL)
+            if selected_item_type == 'CAMERA':
+                self.camera_start_button.config(state=NORMAL)
             else:
                 self.record_button.config(state=DISABLED)
+                self.camera_start_button.config(state=DISABLED)
 
     def open_file(self):
         try:
@@ -240,10 +245,10 @@ class MyProgram:
         pass
 
     def start_camera(self):
-        pass
+        self.camera_stop_button.config(state=NORMAL)
 
     def stop_camera(self):
-        pass
+        self.camera_stop_button.config(state=DISABLED)
 
 
 if __name__ == "__main__":
