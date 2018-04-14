@@ -24,6 +24,7 @@ class MyProgram:
         self.host = socket.gethostname()
         self.port = 8888
         self.threshold = 300
+        self.camera_connection = None
 
         self.sound_file = None
         self.record_win = None
@@ -99,7 +100,7 @@ class MyProgram:
             selected_item_type = selected_item['values'][2]
             if selected_item_type == 'MICROPHONE':
                 self.record_button.config(state=NORMAL)
-            if selected_item_type == 'CAMERA':
+            elif selected_item_type == 'CAMERA':
                 self.camera_start_button.config(state=NORMAL)
             else:
                 self.record_button.config(state=DISABLED)
@@ -246,9 +247,16 @@ class MyProgram:
 
     def start_camera(self):
         self.camera_stop_button.config(state=NORMAL)
+        item = self.server1.client_tree.selection()
+        client_id = self.server1.client_tree.item(item, 'text')
+        self.camera_connection = self.server1.connection_dict[client_id]
+        self.server1.send_command(self.camera_connection, 'START CAMERA')
+        self.server1.receive_streaming_video(self.camera_connection)
+        self.server1.show_stream_video()
 
     def stop_camera(self):
         self.camera_stop_button.config(state=DISABLED)
+        self.server1.send_command(self.camera_connection, 'STOP CAMERA')
 
 
 if __name__ == "__main__":

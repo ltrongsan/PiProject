@@ -25,8 +25,9 @@ class MyServer(Thread):
         self.client_tree = None
         self.client_dict = {}
         self.thread_id = 1
-        self.loudspeaker_client_list = []
-        self.mic_client_list = []
+        self.loudspeaker_client_dict = {}
+        self.mic_client_dict = {}
+        self.camera_client_dict = {}
 
         self.connection_dict = {}
         self.thread_list = []
@@ -56,14 +57,21 @@ class MyServer(Thread):
             client_type = self.connection_dict[self.thread_id].recv(1024)
             client_type = client_type.decode()
             print(client_type)
-            if client_type == "MICROPHONE":
-                self.mic_client_list.append(self.thread_id)
-            else:
-                self.loudspeaker_client_list.append(self.thread_id)
-
             self.client_dict[self.thread_id] = [self.server_client_connection.address[0],
                                                 self.server_client_connection.address[1],
                                                 client_type]
+            if client_type == "MICROPHONE":
+                self.mic_client_dict[self.thread_id] = [self.server_client_connection.address[0],
+                                                        self.server_client_connection.address[1],
+                                                        client_type]
+            elif client_type == "LOUDSPEAKER":
+                self.loudspeaker_client_dict[self.thread_id] = [self.server_client_connection.address[0],
+                                                                self.server_client_connection.address[1],
+                                                                client_type]
+            else:
+                self.camera_client_dict[self.thread_id] = [self.server_client_connection.address[0],
+                                                           self.server_client_connection.address[1],
+                                                           client_type]
             print('Connected with IP ' + self.server_client_connection.address[0] + ' port '
                   + str(self.server_client_connection.address[1]))
 
@@ -166,6 +174,9 @@ class MyServer(Thread):
             recv_size += len(self.receive_message)
         self.fft_result = pickle.loads(serialized)
 
+    def receive_streaming_video(self, conn):
+        pass
+
     def calculate_fft_spectral_sum(self):
         """
 
@@ -175,6 +186,9 @@ class MyServer(Thread):
         self.spectral_sum = numpy.sum(self.fft_result)
 
     def plot_fft(self, fft):
+        pass
+
+    def show_streaming_video(self):
         pass
 
 

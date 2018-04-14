@@ -189,7 +189,7 @@ class MyClient:
         print("Stop playing Sound")
         pygame.mixer.music.stop()
 
-    def show_webcam(self, mirror=False):
+    def capture_video(self, mirror=False):
         cam = cv2.VideoCapture(0)
         while True:
             ret_val, img = cam.read()
