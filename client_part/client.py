@@ -14,6 +14,8 @@ class MyClient:
 
     """
     def __init__(self, host, port, type):
+        self.BUFFER_SIZE = 4096
+
         self.client_IP = socket.gethostname()
         self.send_message = None
         self.receive_message = None
@@ -23,6 +25,8 @@ class MyClient:
         self.command = None
         self.fft = None
         self.spectral_sum = None
+
+        self.img = None
 
         # Connect the socket to the port where the server is listening
         server_address = (host, port)
@@ -65,7 +69,6 @@ class MyClient:
 
         :return:
         """
-        buffer_size = 4096
         packet_number = 0
         sent_size = 0
 
@@ -80,20 +83,20 @@ class MyClient:
             self.socket.send(self.send_message.encode())
             self.send_message = None
             while obj_size > 0:
-                if obj_size > buffer_size:
+                if obj_size > self.BUFFER_SIZE:
                     print('Sending...')
-                    self.send_message = serialized[buffer_size*packet_number:
-                                                   buffer_size*packet_number + buffer_size]
+                    self.send_message = serialized[self.BUFFER_SIZE*packet_number:
+                                                   self.BUFFER_SIZE*packet_number + self.BUFFER_SIZE]
                     self.socket.send(self.send_message)
                     self.send_message = None
-                    obj_size = obj_size - buffer_size
+                    obj_size = obj_size - self.BUFFER_SIZE
                     packet_number += 1
-                    sent_size += len(serialized[buffer_size*packet_number:
-                                                buffer_size*packet_number + buffer_size])
+                    sent_size += len(serialized[self.BUFFER_SIZE*packet_number:
+                                                self.BUFFER_SIZE*packet_number + self.BUFFER_SIZE])
                 else:
-                    self.send_message = serialized[buffer_size*packet_number: len(serialized)]
+                    self.send_message = serialized[self.BUFFER_SIZE*packet_number: len(serialized)]
                     self.socket.send(self.send_message)
-                    sent_size += len(serialized[buffer_size*packet_number: len(serialized)])
+                    sent_size += len(serialized[self.BUFFER_SIZE*packet_number: len(serialized)])
                     break
         self.send_message = None
 
@@ -102,7 +105,7 @@ class MyClient:
 
         :return:
         """
-        self.command = self.socket.recv(2048)
+        self.command = self.socket.recv(self.BUFFER_SIZE)
         self.command = self.command.decode()
 
     def fourier_transform(self, input_data):
@@ -133,7 +136,6 @@ class MyClient:
         :param isTrueSong:
         :return:
         """
-        buffer_size = 4096
         if isTrueSong:
             print('Receive TRUE Sound')
             file_name = "True Sound.mp3"
@@ -142,7 +144,7 @@ class MyClient:
             file_name = "False Sound.mp3"
 
         file = open(file_name, "w+b")
-        data = self.socket.recv(buffer_size)
+        data = self.socket.recv(self.BUFFER_SIZE)
         string = 'DONE'
         string = string.encode()
         print(string)
@@ -150,7 +152,7 @@ class MyClient:
             print('Receiving sound ...')
             file.write(data)
             print(str(list(data)))
-            data = self.socket.recv(buffer_size)
+            data = self.socket.recv(self.BUFFER_SIZE)
 
         file.close()
         print("Done")
@@ -192,14 +194,19 @@ class MyClient:
     def capture_video(self, mirror=False):
         cam = cv2.VideoCapture(0)
         while True:
-            ret_val, img = cam.read()
+            ret_val, self.img = cam.read()
             if mirror:
-                img = cv2.flip(img, 1)
-            cv2.imshow('my webcam', img)
+                self.img = cv2.flip(self.img, 1)
+            self.send_streaming_video()
+            cv2.imshow('My webcam', self.img)
             if cv2.waitKey(1) == 27:
                 break  # esc to quit
         cv2.destroyAllWindows()
 
-    def send_image(self):
-        pass
+    def send_streaming_video(self):
+        self.send_message = cv2.imencode('.jpg', self.img)[1].tostring()
+        # serialized = pickle.dumps(self.img)
+        # self.send_message = serialized
+        self.socket.send(self.send_message)
+
 

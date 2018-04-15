@@ -3,6 +3,7 @@ import sys
 import numpy
 import time
 import pickle
+import cv2
 from threading import Thread
 
 
@@ -14,13 +15,14 @@ class MyServer(Thread):
         Thread.__init__(self)
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)     # create an INET, STREAMing socket
 
-        self.buffer_size = 1024
+        self.BUFFER_SIZE = 4096
         self.file_size = 0
         self.send_message = None
         self.receive_message = None
 
         self.fft_result = None
         self.spectral_sum = None
+        self.img = None
 
         self.client_tree = None
         self.client_dict = {}
@@ -102,7 +104,6 @@ class MyServer(Thread):
         :param isTrue:
         :return:
         """
-        buffer_size = 4096
         if isTrue:
             self.send_command(connection, 'CONFIGURE TRUE')
         else:
@@ -113,15 +114,15 @@ class MyServer(Thread):
         # Send audio file segment
         print('Sending...')
         self.file_size = 0
-        data = file.read(buffer_size)
+        data = file.read(self.BUFFER_SIZE)
         self.send_message = data
 
         while data:
             print('Sending...')
             connection.send(self.send_message)
-            data = file.read(buffer_size)
+            data = file.read(self.BUFFER_SIZE)
             self.send_message = data
-            self.file_size += buffer_size
+            self.file_size += self.BUFFER_SIZE
 
         self.send_message = 'DONE'
         print(self.send_message.encode())
@@ -143,14 +144,14 @@ class MyServer(Thread):
         :return:
         """
         file = open('test.wav', 'wb')
-        self.receive_message = connection.recv(self.buffer_size)
+        self.receive_message = connection.recv(self.BUFFER_SIZE)
         file.write(self.receive_message)
-        self.file_size = self.buffer_size
+        self.file_size = self.BUFFER_SIZE
         while self.receive_message:
             print("Receiving...")
             file.write(self.receive_message)
-            self.receive_message = connection.recv(self.buffer_size)
-            self.file_size += self.buffer_size
+            self.receive_message = connection.recv(self.BUFFER_SIZE)
+            self.file_size += self.BUFFER_SIZE
         file.close()
 
     def receive_fft(self, connection):
@@ -159,23 +160,24 @@ class MyServer(Thread):
         :param connection:
         :return:
         """
-        buffer_size = 4096
         self.send_command(connection, "GET FFT")
-        self.receive_message = connection.recv(buffer_size)
+        self.receive_message = connection.recv(self.BUFFER_SIZE)
         obj_size = int(self.receive_message)
-        self.receive_message = connection.recv(buffer_size)
+        self.receive_message = connection.recv(self.BUFFER_SIZE)
         serialized = bytearray(self.receive_message)
         recv_size = len(self.receive_message)
 
         while recv_size < obj_size:
             print("Receiving")
-            self.receive_message = connection.recv(buffer_size)
+            self.receive_message = connection.recv(self.BUFFER_SIZE)
             serialized.extend(self.receive_message)
             recv_size += len(self.receive_message)
         self.fft_result = pickle.loads(serialized)
 
     def receive_streaming_video(self, conn):
-        pass
+        self.receive_message = conn.recv(self.BUFFER_SIZE)
+        nparr = numpy.fromstring(self.receive_message, numpy.uint8)
+        self.img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
     def calculate_fft_spectral_sum(self):
         """
@@ -188,8 +190,15 @@ class MyServer(Thread):
     def plot_fft(self, fft):
         pass
 
-    def show_streaming_video(self):
-        pass
+    def show_streaming_video(self, conn):
+        self.receive_message(conn)
+        if type(self.img) is type(None):
+            pass
+        else:
+            try:
+                cv2.imshow('MyCam', self.img)
+            except:
+                exit(0)
 
 
 class ServerClientConnection:

@@ -251,8 +251,7 @@ class MyProgram:
         client_id = self.server1.client_tree.item(item, 'text')
         self.camera_connection = self.server1.connection_dict[client_id]
         self.server1.send_command(self.camera_connection, 'START CAMERA')
-        self.server1.receive_streaming_video(self.camera_connection)
-        self.server1.show_streaming_video()
+        self.server1.show_streaming_video(self.camera_connection)
 
     def stop_camera(self):
         self.camera_stop_button.config(state=DISABLED)
