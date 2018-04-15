@@ -124,7 +124,7 @@ class MyProgram:
         self.open_file()
         if self.sound_file is not None:
             self.master.withdraw()
-            for client_id in self.server1.loudspeaker_client_list:
+            for client_id in self.server1.loudspeaker_client_dict:
                 conn_2 = self.server1.connection_dict[client_id]
                 self.server1.send_command(conn_2, 'CONFIGURE TRUE')
                 self.server1.send_song(self.sound_file, conn_2, 'TRUE')
@@ -140,7 +140,7 @@ class MyProgram:
         self.open_file()
         if self.sound_file is not None:
             self.master.withdraw()
-            for client_id in self.server1.loudspeaker_client_list:
+            for client_id in self.server1.loudspeaker_client_dict:
                 conn_2 = self.server1.connection_dict[client_id]
                 self.server1.send_command(conn_2, 'CONFIGURE FALSE')
                 self.server1.send_song(self.sound_file, conn_2, 'FALSE')
@@ -151,19 +151,19 @@ class MyProgram:
         self.sound_file = None
 
     def play_true_sound(self):
-        for client_id in self.server1.loudspeaker_client_list:
+        for client_id in self.server1.loudspeaker_client_dict:
             conn_2 = self.server1.connection_dict[client_id]
             self.server1.send_command(conn_2, 'PLAY TRUE')
             self.server1.send_message = None
 
     def play_false_sound(self):
-        for client_id in self.server1.loudspeaker_client_list:
+        for client_id in self.server1.loudspeaker_client_dict:
             conn_2 = self.server1.connection_dict[client_id]
             self.server1.send_command(conn_2, 'PLAY FALSE')
             self.server1.send_message = None
 
     def stop_playing(self):
-        for client_id in self.server1.loudspeaker_client_list:
+        for client_id in self.server1.loudspeaker_client_dict:
             conn_2 = self.server1.connection_dict[client_id]
             self.server1.send_command(conn_2, 'STOP')
             self.server1.send_message = None
@@ -223,7 +223,7 @@ class MyProgram:
             if not self.isClosed:
                 listbox.insert(END, message)
 
-            for client_id in self.server1.loudspeaker_client_list:
+            for client_id in self.server1.loudspeaker_client_dict:
                 conn_2 = self.server1.connection_dict[client_id]
                 if self.server1.spectral_sum >= self.threshold:
                     self.server1.send_command(conn_2, 'TRUE')
@@ -252,7 +252,7 @@ class MyProgram:
         self.camera_connection = self.server1.connection_dict[client_id]
         self.server1.send_command(self.camera_connection, 'START CAMERA')
         self.server1.receive_streaming_video(self.camera_connection)
-        self.server1.show_stream_video()
+        self.server1.show_streaming_video()
 
     def stop_camera(self):
         self.camera_stop_button.config(state=DISABLED)
