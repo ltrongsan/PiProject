@@ -12,7 +12,8 @@ while isNotConnection:
         print('Connection Established')
         isNotConnection = False
         while 1:
-            camera_client.capture_video()
+            pass
+            # camera_client.capture_video()
             # camera_client.send_streaming_video()
     except:
         isNotConnection = True

@@ -5,6 +5,7 @@ import time
 import pickle
 import cv2
 from threading import Thread
+from PIL import Image, ImageTk
 
 
 class MyServer(Thread):
@@ -199,6 +200,12 @@ class MyServer(Thread):
                 cv2.imshow('MyCam', self.img)
             except:
                 exit(0)
+
+    def capture_video(self):
+        cam = cv2.VideoCapture(0)
+        while True:
+            ret_val, self.img = cam.read()
+            self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2RGBA)
 
 
 class ServerClientConnection:

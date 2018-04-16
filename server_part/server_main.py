@@ -2,10 +2,12 @@ import socket
 import time
 import threading
 import os
+import cv2
 from tkinter import *
 from tkinter.ttk import *
 from tkinter import filedialog
 from server_part import server
+from PIL import Image, ImageTk
 
 
 class MyProgram:
@@ -20,6 +22,9 @@ class MyProgram:
         configuration_frame.grid(row=1, column=0)
         loudspeaker_frame = Frame(self.master)
         loudspeaker_frame.grid(row=1, column=1)
+
+        self.cam_screen = Label(camera_frame)
+        self.cam_screen.grid(row=2, column=3)
 
         self.host = socket.gethostname()
         self.port = 8888
@@ -250,12 +255,24 @@ class MyProgram:
         item = self.server1.client_tree.selection()
         client_id = self.server1.client_tree.item(item, 'text')
         self.camera_connection = self.server1.connection_dict[client_id]
-        self.server1.send_command(self.camera_connection, 'START CAMERA')
-        self.server1.show_streaming_video(self.camera_connection)
+        self.show_frame()
+        # self.server1.send_command(self.camera_connection, 'START CAMERA')
+        # self.server1.show_streaming_video(self.camera_connection)
 
     def stop_camera(self):
         self.camera_stop_button.config(state=DISABLED)
         self.server1.send_command(self.camera_connection, 'STOP CAMERA')
+
+    def show_frame(self):
+        cam = cv2.VideoCapture(0)
+        while 1:
+            ret_val, frame = cam.read()
+            img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+            img = Image.fromarray(img)
+            imgtk = ImageTk.PhotoImage(image=img)
+            self.cam_screen.configure(image=imgtk)
+            self.cam_screen.grid()
+            # self.cam_screen.after(10, self.show_frame)
 
 
 if __name__ == "__main__":

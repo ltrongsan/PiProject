@@ -197,7 +197,7 @@ class MyClient:
             ret_val, self.img = cam.read()
             if mirror:
                 self.img = cv2.flip(self.img, 1)
-            self.send_streaming_video()
+            # self.send_streaming_video()
             cv2.imshow('My webcam', self.img)
             if cv2.waitKey(1) == 27:
                 break  # esc to quit
