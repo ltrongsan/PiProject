@@ -15,7 +15,7 @@ def start():
 
         def show_frame():
             _, frame = cap.read()
-            frame = cv2.flip(frame, 1)
+            # frame = cv2.flip(frame, 1)
             frame = cv2.resize(frame, (800,600))
             cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
             img = Image.fromarray(cv2image)

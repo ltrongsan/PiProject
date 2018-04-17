@@ -5,7 +5,6 @@ import time
 import pickle
 import cv2
 from threading import Thread
-from PIL import Image, ImageTk
 
 
 class MyServer(Thread):
@@ -27,14 +26,14 @@ class MyServer(Thread):
 
         self.client_tree = None
         self.client_dict = {}
-        self.thread_id = 1
         self.loudspeaker_client_dict = {}
         self.mic_client_dict = {}
         self.camera_client_dict = {}
+        self.delete_client_key_list = ()
+        self.thread_id = 1
 
         self.connection_dict = {}
         self.thread_list = []
-        self.server_client_connection = ServerClientConnection(None, None)
 
         print('Socket created')
 
@@ -53,37 +52,33 @@ class MyServer(Thread):
     def run(self):
         while 1:
             # wait to accept a connection - blocking call
-            self.server_client_connection.connection, \
-                self.server_client_connection.address = self.socket.accept()
-            self.connection_dict[self.thread_id] = self.server_client_connection.connection
-
+            server_client_connection = ServerClientConnection(None, None)
+            server_client_connection.connection, \
+                server_client_connection.address = self.socket.accept()
+            self.connection_dict[self.thread_id] = server_client_connection.connection
+            self.check_connection_dict()
             client_type = self.connection_dict[self.thread_id].recv(1024)
             client_type = client_type.decode()
-            print(client_type)
-            self.client_dict[self.thread_id] = [self.server_client_connection.address[0],
-                                                self.server_client_connection.address[1],
+            print('\n' + client_type)
+            self.client_dict[self.thread_id] = [server_client_connection.address[0],
+                                                server_client_connection.address[1],
                                                 client_type]
             if client_type == "MICROPHONE":
-                self.mic_client_dict[self.thread_id] = [self.server_client_connection.address[0],
-                                                        self.server_client_connection.address[1],
+                self.mic_client_dict[self.thread_id] = [server_client_connection.address[0],
+                                                        server_client_connection.address[1],
                                                         client_type]
             elif client_type == "LOUDSPEAKER":
-                self.loudspeaker_client_dict[self.thread_id] = [self.server_client_connection.address[0],
-                                                                self.server_client_connection.address[1],
+                self.loudspeaker_client_dict[self.thread_id] = [server_client_connection.address[0],
+                                                                server_client_connection.address[1],
                                                                 client_type]
             else:
-                self.camera_client_dict[self.thread_id] = [self.server_client_connection.address[0],
-                                                           self.server_client_connection.address[1],
+                self.camera_client_dict[self.thread_id] = [server_client_connection.address[0],
+                                                           server_client_connection.address[1],
                                                            client_type]
-            print('Connected with IP ' + self.server_client_connection.address[0] + ' port '
-                  + str(self.server_client_connection.address[1]))
-
-            new_thread = ClientConnectionThread(self.server_client_connection, self.thread_id)
+            print('Connected with IP ' + server_client_connection.address[0] + ' port '
+                  + str(server_client_connection.address[1]))
             self.client_tree.insert("", "end", text=self.thread_id,
                                     values=(self.client_dict[self.thread_id]))
-            new_thread.daemon = True
-            new_thread.start()
-            self.thread_list.append(new_thread)
             self.thread_id = self.thread_id + 1
 
     def send_command(self, connection, command):
@@ -191,6 +186,17 @@ class MyServer(Thread):
     def plot_fft(self, fft):
         pass
 
+    def check_connection_dict(self):
+        for connection in self.connection_dict:
+            try:
+                connection.send(b'test')
+            except:
+                self.remove_connection(connection)
+                continue
+
+    def remove_connection(self, connection):
+        pass
+
     def show_streaming_video(self, conn):
         self.receive_message(conn)
         if type(self.img) is type(None):
@@ -212,22 +218,4 @@ class ServerClientConnection:
     def __init__(self, connection, address):
         self.connection = connection
         self.address = address
-
-
-class ClientConnectionThread(Thread):
-    """
-
-    """
-    def __init__(self, server_client_conn, client_ID):
-        Thread.__init__(self)
-        self.connection = server_client_conn.connection
-        self.client_IP = server_client_conn.address[0]
-        self.client_port = server_client_conn.address[1]
-        self.client_ID = client_ID
-        print('New connection added: ' + self.client_IP)
-        print('Thread number: ' + str(self.client_ID) + '\n')
-
-    def run(self):
-        while 1:
-            pass
 

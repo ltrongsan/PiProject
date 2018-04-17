@@ -19,6 +19,6 @@ while isNotConnection:
         isNotConnection = True
         print('CANNOT CONNECT TO SERVER')
         time.sleep(5)
-
+        continue
 
 
