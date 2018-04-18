@@ -29,8 +29,7 @@ class MyServer(Thread):
         self.loudspeaker_client_dict = {}
         self.mic_client_dict = {}
         self.camera_client_dict = {}
-        self.delete_client_key_list = ()
-        self.thread_id = 1
+        self.disconnected_client_key_list = []
 
         self.connection_dict = {}
         self.thread_list = []
@@ -55,31 +54,38 @@ class MyServer(Thread):
             server_client_connection = ServerClientConnection(None, None)
             server_client_connection.connection, \
                 server_client_connection.address = self.socket.accept()
-            self.connection_dict[self.thread_id] = server_client_connection.connection
+            self.client_tree.delete(*self.client_tree.get_children())
             self.check_connection_dict()
-            client_type = self.connection_dict[self.thread_id].recv(1024)
+            self.update_connection_dict()
+            thread_id = 1
+            value = self.connection_dict.get(thread_id)
+            while value is not None:
+                thread_id += 1
+                value = self.connection_dict.get(thread_id)
+            self.connection_dict[thread_id] = server_client_connection.connection
+            client_type = self.connection_dict[thread_id].recv(1024)
             client_type = client_type.decode()
             print('\n' + client_type)
-            self.client_dict[self.thread_id] = [server_client_connection.address[0],
-                                                server_client_connection.address[1],
-                                                client_type]
+            self.client_dict[thread_id] = [server_client_connection.address[0],
+                                           server_client_connection.address[1],
+                                           client_type]
             if client_type == "MICROPHONE":
-                self.mic_client_dict[self.thread_id] = [server_client_connection.address[0],
-                                                        server_client_connection.address[1],
-                                                        client_type]
+                self.mic_client_dict[thread_id] = [server_client_connection.address[0],
+                                                   server_client_connection.address[1],
+                                                   client_type]
             elif client_type == "LOUDSPEAKER":
-                self.loudspeaker_client_dict[self.thread_id] = [server_client_connection.address[0],
-                                                                server_client_connection.address[1],
-                                                                client_type]
-            else:
-                self.camera_client_dict[self.thread_id] = [server_client_connection.address[0],
+                self.loudspeaker_client_dict[thread_id] = [server_client_connection.address[0],
                                                            server_client_connection.address[1],
                                                            client_type]
+            else:
+                self.camera_client_dict[thread_id] = [server_client_connection.address[0],
+                                                      server_client_connection.address[1],
+                                                      client_type]
             print('Connected with IP ' + server_client_connection.address[0] + ' port '
                   + str(server_client_connection.address[1]))
-            self.client_tree.insert("", "end", text=self.thread_id,
-                                    values=(self.client_dict[self.thread_id]))
-            self.thread_id = self.thread_id + 1
+            for connection_id in self.connection_dict:
+                self.client_tree.insert("", "end", text=connection_id,
+                                        values=(self.client_dict[connection_id]))
 
     def send_command(self, connection, command):
         """
@@ -187,15 +193,24 @@ class MyServer(Thread):
         pass
 
     def check_connection_dict(self):
-        for connection in self.connection_dict:
+        for connection_id in self.connection_dict:
             try:
-                connection.send(b'test')
+                self.connection_dict[connection_id].send(b'test')
             except:
-                self.remove_connection(connection)
+                self.disconnected_client_key_list.append(connection_id)
                 continue
 
-    def remove_connection(self, connection):
-        pass
+    def update_connection_dict(self):
+        for connection_id in self.disconnected_client_key_list:
+            client_type = self.client_dict[connection_id][2]
+            if client_type == "MICROPHONE":
+                del self.mic_client_dict[connection_id]
+            elif client_type == "LOUDSPEAKER":
+                del self.loudspeaker_client_dict[connection_id]
+            else:
+                del self.camera_client_dict[connection_id]
+            del self.client_dict[connection_id]
+            del self.connection_dict[connection_id]
 
     def show_streaming_video(self, conn):
         self.receive_message(conn)
