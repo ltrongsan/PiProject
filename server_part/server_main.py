@@ -267,9 +267,10 @@ class MyProgram:
             img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
             img = Image.fromarray(img)
             imgtk = ImageTk.PhotoImage(image=img)
-            self.cam_screen.configure(image=imgtk)
+            self.cam_screen.imgtk = imgtk
+            self.cam_screen.config(image=imgtk)
             self.cam_screen.grid()
-            # self.cam_screen.after(10, self.show_frame)
+            self.cam_screen.after(10, self.show_frame)
 
 
 if __name__ == "__main__":

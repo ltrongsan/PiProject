@@ -26,7 +26,7 @@ def start():
                 lmain.after(10, show_frame)
             else:
                 cap.release()
-    show_frame()
+        show_frame()
 
 
 def Stop():
