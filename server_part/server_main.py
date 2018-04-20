@@ -7,7 +7,6 @@ from tkinter import *
 from tkinter.ttk import *
 from tkinter import filedialog
 from server_part import server
-from PIL import Image, ImageTk
 
 
 class MyProgram:
@@ -133,7 +132,6 @@ class MyProgram:
                 conn_2 = self.server1.connection_dict[client_id]
                 self.server1.send_command(conn_2, 'CONFIGURE TRUE')
                 self.server1.send_song(self.sound_file, conn_2, 'TRUE')
-                self.server1.send_message = None
             time.sleep(1)
             self.master.deiconify()
         self.close_waiting_window()
@@ -149,7 +147,6 @@ class MyProgram:
                 conn_2 = self.server1.connection_dict[client_id]
                 self.server1.send_command(conn_2, 'CONFIGURE FALSE')
                 self.server1.send_song(self.sound_file, conn_2, 'FALSE')
-                self.server1.send_message = None
             time.sleep(1)
             self.master.deiconify()
         self.close_waiting_window()

@@ -118,21 +118,20 @@ class MyServer(Thread):
         self.file_size = 0
         data = file.read(self.BUFFER_SIZE)
         self.send_message = data
-
-        try:
-            while data:
-                print('Sending...')
-                connection.send(self.send_message)
-                data = file.read(self.BUFFER_SIZE)
-                self.send_message = data
-                self.file_size += self.BUFFER_SIZE
-
-            self.send_message = 'DONE'
-            print(self.send_message.encode())
-            connection.send(self.send_message.encode())
-            print("Done Sending")
-        except:
-            print('Cannot Sending')
+        self.receive_message = connection.recv(self.BUFFER_SIZE)
+        if self.receive_message == b'READY':
+            try:
+                while data:
+                    print('Sending...')
+                    connection.send(self.send_message)
+                    data = file.read(self.BUFFER_SIZE)
+                    self.send_message = data
+                    self.file_size += self.BUFFER_SIZE
+                time.sleep(1.5)
+                connection.send(b'DONE')
+                print("Done Sending")
+            except:
+                print('Cannot Sending')
 
     def send_fft_spectral_sum(self, connection):
         """

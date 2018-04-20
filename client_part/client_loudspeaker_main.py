@@ -1,7 +1,8 @@
 import socket
 import time
-from client_part import client
 import pygame
+from client_part import client
+
 
 
 isNotConnection = True

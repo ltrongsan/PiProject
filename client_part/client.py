@@ -142,20 +142,20 @@ class MyClient:
         else:
             print('Receive FALSE Sound')
             file_name = "False Sound.mp3"
-
         file = open(file_name, "w+b")
+        self.socket.send(b'READY')
         data = self.socket.recv(self.BUFFER_SIZE)
-        string = 'DONE'
-        string = string.encode()
-        print(string)
-        while data != string:
+        while data != b'DONE':
             print('Receiving sound ...')
             file.write(data)
             print(str(list(data)))
             data = self.socket.recv(self.BUFFER_SIZE)
-
+        print(data)
         file.close()
-        print("Done")
+
+    def configure_song(self, isTrueSong):
+        pass
+
 
     def play_true_song(self, loop):
         """
@@ -189,6 +189,7 @@ class MyClient:
         :return:
         """
         print("Stop playing Sound")
+        pygame.mixer.music.load('temp.mp3')
         pygame.mixer.music.stop()
 
     def capture_video(self, mirror=False):
