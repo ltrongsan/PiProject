@@ -191,15 +191,15 @@ class MyProgram:
         Button(self.record_win, text='Close', command=lambda: self.close_record_window(conn)).pack(side=BOTTOM)
         # endregion
 
-        for item in self.server1.client_tree.selection():
-            client_id = self.server1.client_tree.item(item, 'text')
-            conn = self.server1.connection_dict[client_id]
-            print(client_id)
-            listbox.insert(END, client_id)
-            print(conn)
-            listbox.insert(END, conn)
-            listbox.pack(side=LEFT, fill=BOTH)
-            self.record(conn, listbox)
+        item = self.server1.client_tree.selection()
+        client_id = self.server1.client_tree.item(item, 'text')
+        conn = self.server1.connection_dict[client_id]
+        print(client_id)
+        listbox.insert(END, client_id)
+        print(conn)
+        listbox.insert(END, conn)
+        listbox.pack(side=LEFT, fill=BOTH)
+        self.record(conn, listbox)
 
     def close_record_window(self, conn):
         self.isClosed = True
@@ -259,16 +259,16 @@ class MyProgram:
 
     def show_frame(self):
         cam = cv2.VideoCapture(0)
-        while 1:
-            ret_val, frame = cam.read()
-            img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
-            img = Image.fromarray(img)
-            imgtk = ImageTk.PhotoImage(image=img)
-            self.cam_screen.imgtk = imgtk
-            self.cam_screen.config(image=imgtk)
-            self.cam_screen.grid()
-            self.cam_screen.after(10, self.show_frame)
-
+        # while 1:
+        #     ret_val, frame = cam.read()
+        #     img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+        #     img = Image.fromarray(img)
+        #     imgtk = ImageTk.PhotoImage(image=img)
+        #     self.cam_screen.imgtk = imgtk
+        #     self.cam_screen.config(image=imgtk)
+        #     self.cam_screen.grid()
+        #     self.cam_screen.after(10, self.show_frame)
+        #
 
 if __name__ == "__main__":
     root = Tk()

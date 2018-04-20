@@ -98,6 +98,8 @@ class MyClient:
                     self.socket.send(self.send_message)
                     sent_size += len(serialized[self.BUFFER_SIZE*packet_number: len(serialized)])
                     break
+            time.sleep(1)
+            self.socket.send(b'DONE')
         self.send_message = None
 
     def receive_command(self):

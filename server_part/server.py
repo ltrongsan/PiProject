@@ -176,6 +176,8 @@ class MyServer(Thread):
             self.receive_message = connection.recv(self.BUFFER_SIZE)
             serialized.extend(self.receive_message)
             recv_size += len(self.receive_message)
+        msg = connection.recv(self.BUFFER_SIZE)
+        print(msg)
         self.fft_result = pickle.loads(serialized)
 
     def receive_streaming_video(self, conn):
