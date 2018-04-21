@@ -241,9 +241,6 @@ class MyProgram:
     def close_waiting_window(self):
         self.waiting_win.destroy()
 
-    def check_loudspeaker_list(self):
-        pass
-
     def start_camera(self):
         self.camera_stop_button.config(state=NORMAL)
         item = self.server1.client_tree.selection()

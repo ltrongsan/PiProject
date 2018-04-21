@@ -193,9 +193,6 @@ class MyServer(Thread):
         self.fft_result = self.fft_result / max(self.fft_result)
         self.spectral_sum = numpy.sum(self.fft_result)
 
-    def plot_fft(self, fft):
-        pass
-
     def check_connection_dict(self):
         for connection_id in self.connection_dict:
             try:

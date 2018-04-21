@@ -155,10 +155,6 @@ class MyClient:
         print(data)
         file.close()
 
-    def configure_song(self, isTrueSong):
-        pass
-
-
     def play_true_song(self, loop):
         """
 
