@@ -4,7 +4,7 @@ import numpy
 import time
 import pygame
 import pickle
-import cv2
+# import cv2
 from scipy.io import wavfile
 from numpy.fft import fft
 
@@ -15,6 +15,7 @@ class MyClient:
     """
     def __init__(self, host, port, type):
         self.BUFFER_SIZE = 4096
+        self.FRAME_BUFFER_SIZE = 921664
 
         self.client_IP = socket.gethostname()
         self.send_message = None
@@ -26,7 +27,7 @@ class MyClient:
         self.fft = None
         self.spectral_sum = None
 
-        self.img = None
+        self.frame = None
 
         # Connect the socket to the port where the server is listening
         server_address = (host, port)
@@ -190,22 +191,22 @@ class MyClient:
         pygame.mixer.music.load('temp.mp3')
         pygame.mixer.music.stop()
 
-    def capture_video(self, mirror=False):
-        cam = cv2.VideoCapture(0)
-        while True:
-            ret_val, self.img = cam.read()
-            if mirror:
-                self.img = cv2.flip(self.img, 1)
-            # self.send_streaming_video()
-            cv2.imshow('My webcam', self.img)
-            if cv2.waitKey(1) == 27:
-                break  # esc to quit
-        cv2.destroyAllWindows()
-
-    def send_streaming_video(self):
-        self.send_message = cv2.imencode('.jpg', self.img)[1].tostring()
-        # serialized = pickle.dumps(self.img)
-        # self.send_message = serialized
-        self.socket.send(self.send_message)
+    # def capture_video(self, mirror=False):
+    #     cam = cv2.VideoCapture(0)
+    #     while True:
+    #         ret_val, self.frame = cam.read()
+    #         if mirror:
+    #             self.frame = cv2.flip(self.frame, 1)
+    #         self.send_frame()
+    #         cv2.imshow('My webcam', self.frame)
+    #         print(sys.getsizeof(self.frame))
+    #         if cv2.waitKey(1) == 27:
+    #             break  # esc to quit
+    #     cv2.destroyAllWindows()
+    #
+    # def send_frame(self):
+    #     serialized = pickle.dumps(self.frame)
+    #     self.send_message = serialized
+    #     self.socket.send(self.send_message)
 
 

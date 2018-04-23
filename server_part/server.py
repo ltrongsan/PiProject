@@ -3,7 +3,7 @@ import sys
 import numpy
 import time
 import pickle
-import cv2
+# import cv2
 from threading import Thread
 
 
@@ -16,13 +16,15 @@ class MyServer(Thread):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)     # create an INET, STREAMing socket
 
         self.BUFFER_SIZE = 4096
+        self.FRAME_BUFFER_SIZE = 922000
+
         self.file_size = 0
         self.send_message = None
         self.receive_message = None
 
         self.fft_result = None
         self.spectral_sum = None
-        self.img = None
+        self.frame = None
 
         self.client_tree = None
         self.client_dict = {}
@@ -133,14 +135,6 @@ class MyServer(Thread):
             except:
                 print('Cannot Sending')
 
-    def send_fft_spectral_sum(self, connection):
-        """
-
-        :param connection:
-        :return:
-        """
-        pass
-
     def receive_record_file(self, connection):
         """
 
@@ -180,11 +174,6 @@ class MyServer(Thread):
         print(msg)
         self.fft_result = pickle.loads(serialized)
 
-    def receive_streaming_video(self, conn):
-        self.receive_message = conn.recv(self.BUFFER_SIZE)
-        nparr = numpy.fromstring(self.receive_message, numpy.uint8)
-        self.img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-
     def calculate_fft_spectral_sum(self):
         """
 
@@ -213,21 +202,17 @@ class MyServer(Thread):
             del self.client_dict[connection_id]
             del self.connection_dict[connection_id]
 
-    def show_streaming_video(self, conn):
-        self.receive_message(conn)
-        if type(self.img) is type(None):
-            pass
-        else:
-            try:
-                cv2.imshow('MyCam', self.img)
-            except:
-                exit(0)
-
-    def capture_video(self):
-        cam = cv2.VideoCapture(0)
-        while True:
-            ret_val, self.img = cam.read()
-            self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2RGBA)
+    # def receive_frame(self, conn):
+    #     self.receive_message = conn.recv(self.FRAME_BUFFER_SIZE)
+    #     nparr = numpy.fromstring(self.receive_message, numpy.uint8)
+    #     self.frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    #
+    # def show_frame(self):
+    #     if type(self.frame) is not None:
+    #         try:
+    #             cv2.imshow('ServerVid', self.frame)
+    #         except:
+    #             exit(0)
 
 
 class ServerClientConnection:

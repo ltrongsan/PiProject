@@ -246,8 +246,10 @@ class MyProgram:
         item = self.server1.client_tree.selection()
         client_id = self.server1.client_tree.item(item, 'text')
         self.camera_connection = self.server1.connection_dict[client_id]
-        # self.show_frame()
-        # self.server1.send_command(self.camera_connection, 'START CAMERA')
+        self.server1.send_command(self.camera_connection, 'START CAMERA')
+        while 1:
+            self.server1.receive_frame(self.camera_connection)
+            self.server1.show_frame()
         # self.server1.show_streaming_video(self.camera_connection)
 
     def stop_camera(self):

@@ -12,9 +12,11 @@ while isNotConnection:
         print('Connection Established')
         isNotConnection = False
         while 1:
-            pass
-            # camera_client.capture_video()
-            # camera_client.send_streaming_video()
+            camera_client.receive_message = camera_client.socket.recv(1024)
+            message = camera_client.receive_message.decode()
+            print(message)
+            if message == 'START CAMERA':
+                camera_client.capture_video()
     except:
         isNotConnection = True
         print('CANNOT CONNECT TO SERVER')
